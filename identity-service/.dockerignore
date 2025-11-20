@@ -1,0 +1,11 @@
+# ==========================================
+# .dockerignore
+# ==========================================
+
+target/
+!target/identity-service-1.0.0.jar
+.mvn/
+*.iml
+.idea/
+.git/
+.gitignore

@@ -1,0 +1,55 @@
+# ==========================================
+# docker-compose.yml
+# ==========================================
+
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ev-identity-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: ev_identity_db
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - ev-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  identity-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ev-identity-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ev_identity_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root123
+      JWT_SECRET: k5H7D0qZ1OGfJp7dM87t6R2S3nHlw5kTGBv3dQF4qXU=
+      JWT_EXPIRATION: 3600000
+      JWT_REFRESH_EXPIRATION: 2592000000
+    ports:
+      - "8081:8081"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ev-network
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+
+networks:
+  ev-network:
+    driver: bridge

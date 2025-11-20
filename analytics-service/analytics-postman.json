@@ -1,0 +1,516 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Analytics Service (EV)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "123456"
+  },
+  "item": [
+    {
+      "name": "Analysis Reports",
+      "description": "Endpoints from AnalysisReportController",
+      "item": [
+        {
+          "name": "Create Report",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportType\": \"BATTERY_HEALTH\",\n  \"datasetId\": 1,\n  \"title\": \"Weekly Battery Health Report\",\n  \"description\": \"Analysis of battery degradation for fleet A.\",\n  \"parameters\": {\n    \"fleet\": \"A\",\n    \"timeRange\": \"7d\"\n  }\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reports",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reports"
+              ]
+            },
+            "description": "Creates a new analysis report based on CreateReportRequest"
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Reports",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reports/my-reports",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "my-reports"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Report By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reports/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Report",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reports/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboards",
+      "description": "Endpoints from DashboardController",
+      "item": [
+        {
+          "name": "Create Dashboard",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My Overview Dashboard\",\n  \"description\": \"Main metrics overview.\",\n  \"dashboardType\": \"OVERVIEW\",\n  \"config\": {\n    \"layout\": \"grid\",\n    \"theme\": \"dark\"\n  },\n  \"widgets\": [\n    {\n      \"type\": \"line_chart\",\n      \"title\": \"Energy Consumption\",\n      \"metric\": \"ENERGY_CONSUMPTION\"\n    },\n    {\n      \"type\": \"stat\",\n      \"title\": \"Avg. Range\",\n      \"metric\": \"RANGE_ANALYSIS\"\n    }\n  ],\n  \"isPublic\": false\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboards",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "dashboards"
+              ]
+            },
+            "description": "Creates a new dashboard based on CreateDashboardRequest"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Dashboard",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My Updated Dashboard\",\n  \"description\": \"Updated description.\",\n  \"dashboardType\": \"BATTERY\",\n  \"config\": {\n    \"layout\": \"grid\",\n    \"theme\": \"light\"\n  },\n  \"widgets\": [\n    {\n      \"type\": \"bar_chart\",\n      \"title\": \"Battery SOH\",\n      \"metric\": \"BATTERY_HEALTH\"\n    }\n  ],\n  \"isPublic\": true\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboards/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "dashboards",
+                "1"
+              ]
+            },
+            "description": "Updates an existing dashboard based on CreateDashboardRequest"
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Dashboards",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboards/my-dashboards",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "dashboards",
+                "my-dashboards"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Public Dashboards",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboards/public",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "dashboards",
+                "public"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Dashboard By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboards/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "dashboards",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Dashboard",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboards/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "dashboards",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AI Predictions",
+      "description": "Endpoints from PredictionController",
+      "item": [
+        {
+          "name": "Create Prediction",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"predictionType\": \"BATTERY_DEGRADATION\",\n  \"datasetId\": 1,\n  \"inputData\": {\n    \"currentSOH\": 95.5,\n    \"avgTemp\": 28.0,\n    \"chargeCycles\": 150,\n    \"avgChargeRate\": 1.5\n  },\n  \"modelVersion\": \"v1.0\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/predictions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "predictions"
+              ]
+            },
+            "description": "Creates a new AI prediction task based on PredictionRequest"
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Predictions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/predictions/my-predictions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "predictions",
+                "my-predictions"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Prediction By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/predictions/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "predictions",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Insights",
+      "description": "Endpoints from InsightController",
+      "item": [
+        {
+          "name": "Get Active Insights (Public)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/insights/active",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "insights",
+                "active"
+              ]
+            },
+            "description": "This endpoint is public (permitAll)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Insights By Dataset",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/insights/dataset/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "insights",
+                "dataset",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Insight",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/insights/1/deactivate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "insights",
+                "1",
+                "deactivate"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Data Quality",
+      "description": "Endpoints from DataQualityController. Note: Base path '/api/quality' is assumed from SecurityConfig",
+      "item": [
+        {
+          "name": "Assess Data Quality",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"completeness\": 0.95,\n  \"row_count\": 10000,\n  \"duplicates\": 50,\n  \"lastUpdated\": \"2025-11-07T18:00:00Z\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/quality/assess/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "quality",
+                "assess",
+                "1"
+              ]
+            },
+            "description": "Body is Map<String, Object> datasetMetrics"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Latest Quality (Public)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/quality/dataset/1/latest",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "quality",
+                "dataset",
+                "1",
+                "latest"
+              ]
+            },
+            "description": "This endpoint is public (permitAll)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Low Quality Datasets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/quality/low-quality?threshold=80.0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "quality",
+                "low-quality"
+              ],
+              "query": [
+                {
+                  "key": "threshold",
+                  "value": "80.0"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin Analytics",
+      "description": "Endpoints from AdminAnalyticsController (Requires ADMIN role)",
+      "item": [
+        {
+          "name": "Get Analytics Stats (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/analytics/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "analytics",
+                "stats"
+              ]
+            },
+            "description": "Requires an authentication token with ADMIN authority."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8084/analytics",
+      "description": "Base URL for the Analytics Service"
+    },
+    {
+      "key": "authToken",
+      "value": "YOUR_JWT_TOKEN_HERE",
+      "description": "JWT Token for authentication"
+    }
+  ]
+}

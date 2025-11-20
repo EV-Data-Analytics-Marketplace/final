@@ -1,0 +1,2570 @@
+{
+  "info": {
+    "name": "EV API Gateway Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Identity Service (EV)",
+      "item": [
+        {
+          "name": "Auth API",
+          "description": "Endpoints for Authentication (Login, Register, Refresh)",
+          "item": [
+            {
+              "name": "[Auth] 1. Register - Data Consumer",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"new.consumer@example.com\",\n  \"password\": \"password123\",\n  \"fullName\": \"New Consumer User\",\n  \"role\": \"DATA_CONSUMER\",\n  \"organization\": \"Example Corp\",\n  \"phoneNumber\": \"0987654321\"\n}"
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/auth/register",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                },
+                "description": "Registers a new DATA_CONSUMER."
+              },
+              "response": []
+            },
+            {
+              "name": "[Auth] 2. Login - Admin",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "pm.collectionVariables.set(\"adminToken\", jsonData.accessToken);",
+                      "pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);",
+                      "console.log(\"Admin Token Set: \" + jsonData.accessToken);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin@evdata.com\",\n  \"password\": \"admin123\"\n}"
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/auth/login",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "Logs in the default admin user and saves the token to `adminToken` variable."
+              },
+              "response": []
+            },
+            {
+              "name": "[Auth] 3. Login - Data Consumer",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);",
+                      "pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);",
+                      "console.log(\"User Token Set: \" + jsonData.accessToken);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"consumer@startup.com\",\n  \"password\": \"consumer123\"\n}"
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/auth/login",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "Logs in the default data consumer user and saves the token to `accessToken` variable."
+              },
+              "response": []
+            },
+            {
+              "name": "[Auth] 4. Refresh Token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// This script assumes you ran a login request first to get a refresh token",
+                      "var jsonData = pm.response.json();",
+                      "pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);",
+                      "pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);",
+                      "console.log(\"Token refreshed. New Access Token: \" + jsonData.accessToken);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/auth/refresh-token",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "auth",
+                    "refresh-token"
+                  ]
+                },
+                "description": "Uses the `refreshToken` variable to get a new `accessToken`."
+              },
+              "response": []
+            },
+            {
+              "name": "[Auth] 5. Logout",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/auth/logout",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "auth",
+                    "logout"
+                  ]
+                },
+                "description": "Logs out the user by revoking refresh tokens. Uses `accessToken`."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "User API",
+          "description": "Endpoints for regular authenticated users.",
+          "item": [
+            {
+              "name": "[User] Get My Profile",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/users/profile",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "users",
+                    "profile"
+                  ]
+                },
+                "description": "Gets the profile of the currently logged-in user."
+              },
+              "response": []
+            },
+            {
+              "name": "[User] Update My Profile",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"consumer@startup.com\",\n  \"fullName\": \"Research Team (Updated)\",\n  \"phoneNumber\": \"1234567890\",\n  \"organization\": \"EV Startup Research\",\n  \"role\": \"DATA_CONSUMER\",\n  \"address\": \"123 Main St\",\n  \"country\": \"USA\",\n  \"city\": \"San Francisco\"\n}"
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/users/profile",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "users",
+                    "profile"
+                  ]
+                },
+                "description": "Updates the profile of the logged-in user. Note: Body uses RegisterRequest DTO."
+              },
+              "response": []
+            },
+            {
+              "name": "[User] Change My Password",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentPassword\": \"consumer123\",\n  \"newPassword\": \"newPassword456\"\n}"
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/users/change-password",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "users",
+                    "change-password"
+                  ]
+                },
+                "description": "Changes the password for the logged-in user."
+              },
+              "response": []
+            }
+          ],
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{accessToken}}",
+                "type": "string"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin API",
+          "description": "Endpoints restricted to ADMIN role.",
+          "item": [
+            {
+              "name": "[Admin] Get All Users",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/admin/users",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "admin",
+                    "users"
+                  ]
+                },
+                "description": "Gets a list of all users."
+              },
+              "response": []
+            },
+            {
+              "name": "[Admin] Get User Stats",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/admin/users/stats",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "admin",
+                    "users",
+                    "stats"
+                  ]
+                },
+                "description": "Gets statistics about users."
+              },
+              "response": []
+            },
+            {
+              "name": "[Admin] Get Users by Role (DATA_PROVIDER)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/admin/users/role/DATA_PROVIDER",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "admin",
+                    "users",
+                    "role",
+                    "DATA_PROVIDER"
+                  ]
+                },
+                "description": "Gets all users with the role DATA_PROVIDER."
+              },
+              "response": []
+            },
+            {
+              "name": "[Admin] Get Users by Status (ACTIVE)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/admin/users/status/ACTIVE",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "admin",
+                    "users",
+                    "status",
+                    "ACTIVE"
+                  ]
+                },
+                "description": "Gets all users with the status ACTIVE."
+              },
+              "response": []
+            },
+            {
+              "name": "[Admin] Update User Status (Suspend User 2)",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/admin/users/2/status?status=SUSPENDED",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "admin",
+                    "users",
+                    "2",
+                    "status"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "SUSPENDED"
+                    }
+                  ]
+                },
+                "description": "Updates the status of user with ID 2 to SUSPENDED. (Assumes ID 2 is provider@tesla.com)"
+              },
+              "response": []
+            },
+            {
+              "name": "[Admin] Update User Role (Change User 3 to ADMIN)",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/admin/users/3/role?role=ADMIN",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "admin",
+                    "users",
+                    "3",
+                    "role"
+                  ],
+                  "query": [
+                    {
+                      "key": "role",
+                      "value": "ADMIN"
+                    }
+                  ]
+                },
+                "description": "Updates the role of user with ID 3 to ADMIN. (Assumes ID 3 is consumer@startup.com)"
+              },
+              "response": []
+            },
+            {
+              "name": "[Admin] Suspend User (User 2)",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/admin/users/2/suspend?reason=Violation",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "admin",
+                    "users",
+                    "2",
+                    "suspend"
+                  ],
+                  "query": [
+                    {
+                      "key": "reason",
+                      "value": "Violation"
+                    }
+                  ]
+                },
+                "description": "Suspends user with ID 2."
+              },
+              "response": []
+            },
+            {
+              "name": "[Admin] Activate User (User 2)",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/admin/users/2/activate",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "admin",
+                    "users",
+                    "2",
+                    "activate"
+                  ]
+                },
+                "description": "Activates user with ID 2."
+              },
+              "response": []
+            },
+            {
+              "name": "[Admin] Delete User (User 3)",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/admin/users/3",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "admin",
+                    "users",
+                    "3"
+                  ]
+                },
+                "description": "Deletes user with ID 3. (Assumes ID 3 is consumer@startup.com)"
+              },
+              "response": []
+            },
+            {
+              "name": "[Admin] Get Token Stats",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/admin/tokens/stats",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "admin",
+                    "tokens",
+                    "stats"
+                  ]
+                },
+                "description": "Gets statistics about refresh tokens."
+              },
+              "response": []
+            },
+            {
+              "name": "[Admin] Cleanup Expired Tokens",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/identity/api/admin/tokens/cleanup",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "identity",
+                    "api",
+                    "admin",
+                    "tokens",
+                    "cleanup"
+                  ]
+                },
+                "description": "Deletes expired and revoked refresh tokens from the database."
+              },
+              "response": []
+            }
+          ],
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{adminToken}}",
+                "type": "string"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Data Service (EV)",
+      "item": [
+        {
+          "name": "Datasets (DatasetController)",
+          "item": [
+            {
+              "name": "[PUBLIC] Search Datasets",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"keyword\": \"behavior\",\n    \"categoryId\": 1,\n    \"dataType\": null,\n    \"format\": \"CSV\",\n    \"pricingModel\": \"FREE\",\n    \"usageRights\": \"RESEARCH_ONLY\",\n    \"minPrice\": 0,\n    \"maxPrice\": 100,\n    \"sortBy\": \"rating\",\n    \"sortDirection\": \"DESC\",\n    \"page\": 0,\n    \"size\": 10\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/datasets/search",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "datasets",
+                    "search"
+                  ]
+                },
+                "description": "Tìm kiếm và phân trang các dataset đã PUBLISHED."
+              },
+              "response": []
+            },
+            {
+              "name": "[PUBLIC] View Dataset Public",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/datasets/public/1/view",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "datasets",
+                    "public",
+                    "1",
+                    "view"
+                  ]
+                },
+                "description": "API public để xem thông tin cơ bản của dataset (tăng view count)."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Dataset By ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/datasets/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "datasets",
+                    "1"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Lấy chi tiết dataset. Cần xác thực. Tăng view count."
+              },
+              "response": []
+            },
+            {
+              "name": "[PROVIDER] Create Dataset",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{adminToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Vinfast VF8 Driving Data Q1-2024 (HCMC)\",\n    \"code\": \"VF8_DRIVING_Q1_2024_HCMC\",\n    \"description\": \"Dữ liệu hành vi lái xe, tốc độ, gia tốc, phanh từ 100 xe VF8 tại TP.HCM trong Q1/2024.\",\n    \"categoryId\": 1,\n    \"dataType\": \"RAW\",\n    \"format\": \"CSV\",\n    \"pricingModel\": \"PAY_PER_DOWNLOAD\",\n    \"price\": 50.00,\n    \"currency\": \"USD\",\n    \"usageRights\": \"RESEARCH_ONLY\",\n    \"region\": \"Asia\",\n    \"country\": \"Vietnam\",\n    \"city\": \"Ho Chi Minh City\",\n    \"dataStartDate\": \"2024-01-01T00:00:00\",\n    \"dataEndDate\": \"2024-03-31T23:59:59\",\n    \"fileUrl\": \"s3://my-bucket/datasets/vf8_q1_2024.csv\",\n    \"fileSize\": 104857600,\n    \"recordCount\": 500000,\n    \"apiEndpoint\": null,\n    \"tags\": \"vinfast, vf8, driving data, hcmc, raw\",\n    \"sampleData\": \"timestamp,speed,acceleration,brake_pressure\\n2024-01-01T00:01:00,45.5,0.2,-0.1\\n\",\n    \"schema\": \"{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"timestamp\\\":{\\\"type\\\":\\\"string\\\",\\\"format\\\":\\\"date-time\\\"},\\\"speed\\\":{\\\"type\\\":\\\"number\\\"}}}\",\n    \"anonymized\": true,\n    \"gdprCompliant\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/datasets",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "datasets"
+                  ]
+                },
+                "description": "Tạo dataset mới (status: DRAFT). Cần role DATA_PROVIDER."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Dataset",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Vinfast VF8 Driving Data Q1-2024 (HCMC) - Updated\",\n    \"code\": \"VF8_DRIVING_Q1_2024_HCMC\",\n    \"description\": \"Dữ liệu hành vi lái xe, tốc độ, gia tốc, phanh từ 100 xe VF8 tại TP.HCM trong Q1/2024. Đã cập nhật mô tả.\",\n    \"categoryId\": 1,\n    \"dataType\": \"RAW\",\n    \"format\": \"CSV\",\n    \"pricingModel\": \"PAY_PER_DOWNLOAD\",\n    \"price\": 55.00,\n    \"currency\": \"USD\",\n    \"usageRights\": \"RESEARCH_ONLY\",\n    \"region\": \"Asia\",\n    \"country\": \"Vietnam\",\n    \"city\": \"Ho Chi Minh City\",\n    \"dataStartDate\": \"2024-01-01T00:00:00\",\n    \"dataEndDate\": \"2024-03-31T23:59:59\",\n    \"fileUrl\": \"s3://my-bucket/datasets/vf8_q1_2024_v2.csv\",\n    \"fileSize\": 104857600,\n    \"recordCount\": 500000,\n    \"apiEndpoint\": null,\n    \"tags\": \"vinfast, vf8, driving data, hcmc, raw, updated\",\n    \"sampleData\": \"timestamp,speed,acceleration,brake_pressure\\n2024-01-01T00:01:00,45.5,0.2,-0.1\\n\",\n    \"schema\": \"{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"timestamp\\\":{\\\"type\\\":\\\"string\\\",\\\"format\\\":\\\"date-time\\\"},\\\"speed\\\":{\\\"type\\\":\\\"number\\\"}}}\",\n    \"anonymized\": true,\n    \"gdprCompliant\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/datasets/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "datasets",
+                    "1"
+                  ]
+                },
+                "description": "Cập nhật dataset. Chỉ chủ sở hữu hoặc ADMIN."
+              },
+              "response": []
+            },
+            {
+              "name": "Publish Dataset",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/datasets/1/publish",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "datasets",
+                    "1",
+                    "publish"
+                  ]
+                },
+                "description": "Chuyển status của dataset từ DRAFT sang PUBLISHED. Chỉ chủ sở hữu hoặc ADMIN."
+              },
+              "response": []
+            },
+            {
+              "name": "[PROVIDER] Get My Datasets",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/my-datasets",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "my-datasets"
+                  ]
+                },
+                "description": "Lấy danh sách các dataset do user hiện tại tạo."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Dataset",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/datasets/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "datasets",
+                    "1"
+                  ]
+                },
+                "description": "Xóa dataset. Chỉ chủ sở hữu hoặc ADMIN."
+              },
+              "response": []
+            }
+          ],
+          "description": "Quản lý và tìm kiếm Datasets."
+        },
+        {
+          "name": "Categories (DataCategoryController)",
+          "item": [
+            {
+              "name": "Get All Categories",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/categories",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "categories"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Active Categories",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/categories/active",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "categories",
+                    "active"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Category By ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/categories/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "categories",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Category By Code",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/categories/code/DRIVING_BEHAVIOR",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "categories",
+                    "code",
+                    "DRIVING_BEHAVIOR"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[ADMIN] Create Category",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Predictive Maintenance\",\n    \"code\": \"PREDICTIVE_MAINTENANCE\",\n    \"description\": \"Dữ liệu phục vụ bảo trì dự đoán, cảnh báo hỏng hóc.\",\n    \"iconUrl\": \"/icons/maintenance.png\",\n    \"type\": \"VEHICLE_DIAGNOSTICS\",\n    \"active\": true,\n    \"displayOrder\": 7\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/categories",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "categories"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[ADMIN] Update Category",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Predictive Maintenance (Updated)\",\n    \"code\": \"PREDICTIVE_MAINTENANCE\",\n    \"description\": \"Dữ liệu phục vụ bảo trì dự đoán, cảnh báo hỏng hóc. (Updated)\",\n    \"iconUrl\": \"/icons/maintenance_v2.png\",\n    \"type\": \"VEHICLE_DIAGNOSTICS\",\n    \"active\": true,\n    \"displayOrder\": 7\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/categories/7",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "categories",
+                    "7"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[ADMIN] Delete Category",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/categories/7",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "categories",
+                    "7"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "description": "Quản lý các danh mục dữ liệu."
+        },
+        {
+          "name": "Ratings (DatasetRatingController)",
+          "item": [
+            {
+              "name": "[CONSUMER] Rate Dataset",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"datasetId\": 1,\n    \"rating\": 5,\n    \"comment\": \"Dữ liệu rất chi tiết và hữu ích cho nghiên cứu của tôi!\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/ratings",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "ratings"
+                  ]
+                },
+                "description": "Đánh giá một dataset. Cần phải có quyền truy cập dataset đó trước."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Dataset Ratings",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/ratings/dataset/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "ratings",
+                    "dataset",
+                    "1"
+                  ]
+                },
+                "description": "Lấy tất cả đánh giá của một dataset."
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Ratings",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/ratings/my-ratings",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "ratings",
+                    "my-ratings"
+                  ]
+                },
+                "description": "Lấy các đánh giá của user hiện tại."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Rating",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/ratings/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "ratings",
+                    "1"
+                  ]
+                },
+                "description": "Xóa đánh giá. Chỉ chủ sở hữu đánh giá hoặc ADMIN."
+              },
+              "response": []
+            }
+          ],
+          "description": "Quản lý đánh giá (ratings) cho datasets."
+        },
+        {
+          "name": "Access (DatasetAccessController)",
+          "item": [
+            {
+              "name": "[CONSUMER] Grant Access",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"datasetId\": 1,\n    \"accessType\": \"DOWNLOAD\", \n    \"durationDays\": null,\n    \"apiCallsLimit\": 0\n}\n\n// {\n//     \"datasetId\": 2,\n//     \"accessType\": \"API\", \n//     \"durationDays\": 30,\n//     \"apiCallsLimit\": 10000\n// }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/access/grant",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "access",
+                    "grant"
+                  ]
+                },
+                "description": "Cấp quyền truy cập (mua) dataset. Cần role DATA_CONSUMER."
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Accesses",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/access/my-accesses",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "access",
+                    "my-accesses"
+                  ]
+                },
+                "description": "Lấy danh sách các quyền truy cập của user hiện tại."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Access By ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/access/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "access",
+                    "1"
+                  ]
+                },
+                "description": "Lấy chi tiết một quyền truy cập. Chỉ chủ sở hữu hoặc ADMIN."
+              },
+              "response": []
+            },
+            {
+              "name": "Record Download",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/access/download/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "access",
+                    "download",
+                    "1"
+                  ]
+                },
+                "description": "Ghi nhận một lượt download. Cần có access 'ACTIVE' cho datasetId này."
+              },
+              "response": []
+            },
+            {
+              "name": "Record API Call",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/access/api-call/1?apiToken=YOUR_API_TOKEN",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "access",
+                    "api-call",
+                    "1"
+                  ],
+                  "query": [
+                    {
+                      "key": "apiToken",
+                      "value": "YOUR_API_TOKEN"
+                    }
+                  ]
+                },
+                "description": "Ghi nhận một lượt gọi API. Cần có access 'ACTIVE' và đúng apiToken."
+              },
+              "response": []
+            },
+            {
+              "name": "Revoke Access",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/access/1/revoke",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "access",
+                    "1",
+                    "revoke"
+                  ]
+                },
+                "description": "Thu hồi quyền truy cập. Chỉ chủ sở hữu, provider của dataset, hoặc ADMIN."
+              },
+              "response": []
+            }
+          ],
+          "description": "Quản lý quyền truy cập (access) vào datasets."
+        },
+        {
+          "name": "Admin (AdminDataController)",
+          "item": [
+            {
+              "name": "[ADMIN] Get Stats",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/admin/stats",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "admin",
+                    "stats"
+                  ]
+                },
+                "description": "Lấy thống kê toàn hệ thống. Cần role ADMIN."
+              },
+              "response": []
+            },
+            {
+              "name": "[ADMIN] Get All Datasets (Filter by Status)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/admin/datasets?status=DRAFT",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "admin",
+                    "datasets"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "DRAFT",
+                      "description": "Lọc theo status (DRAFT, PUBLISHED, ARCHIVED, ...)"
+                    }
+                  ]
+                },
+                "description": "Lấy tất cả dataset (cho admin). Cần role ADMIN."
+              },
+              "response": []
+            },
+            {
+              "name": "[ADMIN] Update Dataset Status",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/admin/datasets/1/status?status=PUBLISHED",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "admin",
+                    "datasets",
+                    "1",
+                    "status"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "PUBLISHED",
+                      "description": "Status mới (PUBLISHED, ARCHIVED, SUSPENDED)"
+                    }
+                  ]
+                },
+                "description": "Cập nhật status của dataset (ví dụ: duyệt, treo). Cần role ADMIN."
+              },
+              "response": []
+            },
+            {
+              "name": "[ADMIN] Get All Accesses",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/admin/accesses",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "admin",
+                    "accesses"
+                  ]
+                },
+                "description": "Lấy tất cả các lượt cấp quyền. Cần role ADMIN."
+              },
+              "response": []
+            },
+            {
+              "name": "[ADMIN] Get Providers Stats",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/data/api/admin/providers",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "data",
+                    "api",
+                    "admin",
+                    "providers"
+                  ]
+                },
+                "description": "Lấy thống kê về các Data Providers. Cần role ADMIN."
+              },
+              "response": []
+            }
+          ],
+          "description": "Các API dành riêng cho vai trò ADMIN.",
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{adminToken}}",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminToken}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Payment Service (EV)",
+      "item": [
+        {
+          "name": "TransactionController",
+          "item": [
+            {
+              "name": "Create Transaction",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"datasetId\": 1,\n  \"transactionType\": \"PURCHASE\",\n  \"amount\": 99.99,\n  \"paymentMethod\": \"CREDIT_CARD\",\n  \"paymentMethodId\": 1,\n  \"subscriptionDays\": null,\n  \"apiCallsLimit\": null,\n  \"notes\": \"Test purchase from Postman\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/transactions",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "transactions"
+                  ]
+                },
+                "description": "Tạo một giao dịch mới"
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Transactions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/transactions/my-transactions",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "transactions",
+                    "my-transactions"
+                  ]
+                },
+                "description": "Lấy tất cả giao dịch của user hiện tại"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Consumer Transactions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/transactions/consumer",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "transactions",
+                    "consumer"
+                  ]
+                },
+                "description": "Lấy giao dịch với vai trò DATA_CONSUMER"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Provider Transactions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/transactions/provider",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "transactions",
+                    "provider"
+                  ]
+                },
+                "description": "Lấy giao dịch với vai trò DATA_PROVIDER"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Transaction by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/transactions/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "transactions",
+                    "1"
+                  ]
+                },
+                "description": "Lấy giao dịch theo ID"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Transaction by Ref",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/transactions/ref/EVT_TEST123",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "transactions",
+                    "ref",
+                    "EVT_TEST123"
+                  ]
+                },
+                "description": "Lấy giao dịch theo transactionId (ref)"
+              },
+              "response": []
+            }
+          ],
+          "description": "Endpoints từ TransactionController"
+        },
+        {
+          "name": "PaymentMethodController",
+          "item": [
+            {
+              "name": "Add Payment Method",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"CREDIT_CARD\",\n  \"cardNumber\": \"4111222233334444\",\n  \"cardHolderName\": \"Test User\",\n  \"cardExpMonth\": \"12\",\n  \"cardExpYear\": \"2028\",\n  \"cardCvv\": \"123\",\n  \"isDefault\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/payment-methods",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "payment-methods"
+                  ]
+                },
+                "description": "Thêm một phương thức thanh toán mới"
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Payment Methods",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/payment-methods",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "payment-methods"
+                  ]
+                },
+                "description": "Lấy danh sách PTTT của user hiện tại"
+              },
+              "response": []
+            },
+            {
+              "name": "Set Default Payment Method",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/payment-methods/1/set-default",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "payment-methods",
+                    "1",
+                    "set-default"
+                  ]
+                },
+                "description": "Đặt PTTT làm mặc định"
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Payment Method",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/payment-methods/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "payment-methods",
+                    "1"
+                  ]
+                },
+                "description": "Xóa PTTT (thực chất là set inactive)"
+              },
+              "response": []
+            }
+          ],
+          "description": "Endpoints từ PaymentMethodController"
+        },
+        {
+          "name": "RefundController",
+          "item": [
+            {
+              "name": "Create Refund Request",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"transactionId\": 1,\n  \"amount\": 50.00,\n  \"reason\": \"CUSTOMER_REQUEST\",\n  \"description\": \"Không hài lòng về chất lượng dataset\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/refunds",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "refunds"
+                  ]
+                },
+                "description": "Tạo yêu cầu hoàn tiền"
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Refunds",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/refunds/my-refunds",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "refunds",
+                    "my-refunds"
+                  ]
+                },
+                "description": "Lấy danh sách yêu cầu hoàn tiền của user"
+              },
+              "response": []
+            },
+            {
+              "name": "[ADMIN] Approve Refund",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/refunds/1/approve",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "refunds",
+                    "1",
+                    "approve"
+                  ]
+                },
+                "description": "ADMIN duyệt yêu cầu hoàn tiền"
+              },
+              "response": []
+            },
+            {
+              "name": "[ADMIN] Reject Refund",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/refunds/1/reject?reason=Yeu cau khong hop le",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "refunds",
+                    "1",
+                    "reject"
+                  ],
+                  "query": [
+                    {
+                      "key": "reason",
+                      "value": "Yeu cau khong hop le"
+                    }
+                  ]
+                },
+                "description": "ADMIN từ chối yêu cầu hoàn tiền"
+              },
+              "response": []
+            }
+          ],
+          "description": "Endpoints từ RefundController"
+        },
+        {
+          "name": "ProviderRevenueController",
+          "item": [
+            {
+              "name": "Get My Revenue",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/revenue/my-revenue",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "revenue",
+                    "my-revenue"
+                  ]
+                },
+                "description": "Lấy doanh thu của DATA_PROVIDER"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Revenue by Month",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/revenue/month?year=2024&month=10",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "revenue",
+                    "month"
+                  ],
+                  "query": [
+                    {
+                      "key": "year",
+                      "value": "2024"
+                    },
+                    {
+                      "key": "month",
+                      "value": "10"
+                    }
+                  ]
+                },
+                "description": "Lấy doanh thu theo tháng của DATA_PROVIDER"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Total Earnings",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/revenue/total-earnings",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "revenue",
+                    "total-earnings"
+                  ]
+                },
+                "description": "Lấy tổng thu nhập đã thanh toán của DATA_PROVIDER"
+              },
+              "response": []
+            }
+          ],
+          "description": "Endpoints từ ProviderRevenueController (Yêu cầu role DATA_PROVIDER)"
+        },
+        {
+          "name": "AdminPaymentController",
+          "item": [
+            {
+              "name": "Get Payment Stats",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/admin/payment/stats",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "admin",
+                    "payment",
+                    "stats"
+                  ]
+                },
+                "description": "Lấy thống kê thanh toán tổng quan"
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Transactions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/admin/payment/transactions?status=COMPLETED",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "admin",
+                    "payment",
+                    "transactions"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "COMPLETED"
+                    }
+                  ]
+                },
+                "description": "Lấy tất cả giao dịch, có thể lọc theo status"
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Refunds",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/admin/payment/refunds?status=PENDING",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "admin",
+                    "payment",
+                    "refunds"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "PENDING"
+                    }
+                  ]
+                },
+                "description": "Lấy tất cả yêu cầu hoàn tiền, có thể lọc theo status"
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Provider Revenues",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/admin/payment/provider-revenues",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "admin",
+                    "payment",
+                    "provider-revenues"
+                  ]
+                },
+                "description": "Lấy tất cả doanh thu của các provider"
+              },
+              "response": []
+            },
+            {
+              "name": "Calculate Monthly Revenue",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/payment/api/admin/payment/calculate-monthly-revenue?year=2024&month=10",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "payment",
+                    "api",
+                    "admin",
+                    "payment",
+                    "calculate-monthly-revenue"
+                  ],
+                  "query": [
+                    {
+                      "key": "year",
+                      "value": "2024"
+                    },
+                    {
+                      "key": "month",
+                      "value": "10"
+                    }
+                  ]
+                },
+                "description": "Kích hoạt việc tính toán doanh thu hàng tháng cho provider"
+              },
+              "response": []
+            }
+          ],
+          "description": "Endpoints từ AdminPaymentController (Yêu cầu role ADMIN)"
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminToken}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Analytics Service (EV)",
+      "item": [
+        {
+          "name": "Analysis Reports",
+          "description": "Endpoints from AnalysisReportController",
+          "item": [
+            {
+              "name": "Create Report",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reportType\": \"BATTERY_HEALTH\",\n  \"datasetId\": 1,\n  \"title\": \"Weekly Battery Health Report\",\n  \"description\": \"Analysis of battery degradation for fleet A.\",\n  \"parameters\": {\n    \"fleet\": \"A\",\n    \"timeRange\": \"7d\"\n  }\n}\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/reports",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "reports"
+                  ]
+                },
+                "description": "Creates a new analysis report based on CreateReportRequest"
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Reports",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/reports/my-reports",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "reports",
+                    "my-reports"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Report By Id",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/reports/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "reports",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Report",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/reports/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "reports",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Dashboards",
+          "description": "Endpoints from DashboardController",
+          "item": [
+            {
+              "name": "Create Dashboard",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"My Overview Dashboard\",\n  \"description\": \"Main metrics overview.\",\n  \"dashboardType\": \"OVERVIEW\",\n  \"config\": {\n    \"layout\": \"grid\",\n    \"theme\": \"dark\"\n  },\n  \"widgets\": [\n    {\n      \"type\": \"line_chart\",\n      \"title\": \"Energy Consumption\",\n      \"metric\": \"ENERGY_CONSUMPTION\"\n    },\n    {\n      \"type\": \"stat\",\n      \"title\": \"Avg. Range\",\n      \"metric\": \"RANGE_ANALYSIS\"\n    }\n  ],\n  \"isPublic\": false\n}\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/dashboards",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "dashboards"
+                  ]
+                },
+                "description": "Creates a new dashboard based on CreateDashboardRequest"
+              },
+              "response": []
+            },
+            {
+              "name": "Update Dashboard",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"My Updated Dashboard\",\n  \"description\": \"Updated description.\",\n  \"dashboardType\": \"BATTERY\",\n  \"config\": {\n    \"layout\": \"grid\",\n    \"theme\": \"light\"\n  },\n  \"widgets\": [\n    {\n      \"type\": \"bar_chart\",\n      \"title\": \"Battery SOH\",\n      \"metric\": \"BATTERY_HEALTH\"\n    }\n  ],\n  \"isPublic\": true\n}\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/dashboards/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "dashboards",
+                    "1"
+                  ]
+                },
+                "description": "Updates an existing dashboard based on CreateDashboardRequest"
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Dashboards",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/dashboards/my-dashboards",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "dashboards",
+                    "my-dashboards"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Dashboards",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/dashboards/public",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "dashboards",
+                    "public"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Dashboard By Id",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/dashboards/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "dashboards",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Dashboard",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/dashboards/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "dashboards",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "AI Predictions",
+          "description": "Endpoints from PredictionController",
+          "item": [
+            {
+              "name": "Create Prediction",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"predictionType\": \"BATTERY_DEGRADATION\",\n  \"datasetId\": 1,\n  \"inputData\": {\n    \"currentSOH\": 95.5,\n    \"avgTemp\": 28.0,\n    \"chargeCycles\": 150,\n    \"avgChargeRate\": 1.5\n  },\n  \"modelVersion\": \"v1.0\"\n}\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/predictions",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "predictions"
+                  ]
+                },
+                "description": "Creates a new AI prediction task based on PredictionRequest"
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Predictions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/predictions/my-predictions",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "predictions",
+                    "my-predictions"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Prediction By Id",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/predictions/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "predictions",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Insights",
+          "description": "Endpoints from InsightController",
+          "item": [
+            {
+              "name": "Get Active Insights (Public)",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/insights/active",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "insights",
+                    "active"
+                  ]
+                },
+                "description": "This endpoint is public (permitAll)"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Insights By Dataset",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/insights/dataset/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "insights",
+                    "dataset",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Deactivate Insight",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/insights/1/deactivate",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "insights",
+                    "1",
+                    "deactivate"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Data Quality",
+          "description": "Endpoints from DataQualityController. Note: Base path '/api/quality' is assumed from SecurityConfig",
+          "item": [
+            {
+              "name": "Assess Data Quality",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"completeness\": 0.95,\n  \"row_count\": 10000,\n  \"duplicates\": 50,\n  \"lastUpdated\": \"2025-11-07T18:00:00Z\"\n}\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/quality/assess/1",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "quality",
+                    "assess",
+                    "1"
+                  ]
+                },
+                "description": "Body is Map<String, Object> datasetMetrics"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Latest Quality (Public)",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/quality/dataset/1/latest",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "quality",
+                    "dataset",
+                    "1",
+                    "latest"
+                  ]
+                },
+                "description": "This endpoint is public (permitAll)"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Low Quality Datasets",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/quality/low-quality?threshold=80.0",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "quality",
+                    "low-quality"
+                  ],
+                  "query": [
+                    {
+                      "key": "threshold",
+                      "value": "80.0"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Admin Analytics",
+          "description": "Endpoints from AdminAnalyticsController (Requires ADMIN role)",
+          "item": [
+            {
+              "name": "Get Analytics Stats (ADMIN)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{apiGatewayUrl}}/analytics/api/admin/analytics/stats",
+                  "host": [
+                    "{{apiGatewayUrl}}"
+                  ],
+                  "path": [
+                    "analytics",
+                    "api",
+                    "admin",
+                    "analytics",
+                    "stats"
+                  ]
+                },
+                "description": "Requires an authentication token with ADMIN authority."
+              },
+              "response": []
+            }
+          ]
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminToken}}",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "apiGatewayUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string",
+      "description": "Stores the JWT for regular user (DATA_CONSUMER/PROVIDER)"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string",
+      "description": "Stores the JWT for ADMIN user"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string",
+      "description": "Stores the refresh token from the last login"
+    }
+  ]
+}

@@ -1,0 +1,265 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # Eureka Server - Service Discovery
+  # ==========================================
+  eureka-server:
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    container_name: ev-eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - ev-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # ==========================================
+  # API Gateway
+  # ==========================================
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: ev-api-gateway
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8080:8080"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - ev-network
+    restart: unless-stopped
+
+  # ==========================================
+  # MySQL Databases
+  # ==========================================
+  mysql-identity:
+    image: mysql:8.0
+    container_name: ev-identity-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: ev_identity_db
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-identity-data:/var/lib/mysql
+      - ./identity-service/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - ev-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-data:
+    image: mysql:8.0
+    container_name: ev-data-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: ev_data_db
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql-data-volume:/var/lib/mysql
+      - ./data-service/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - ev-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-payment:
+    image: mysql:8.0
+    container_name: ev-payment-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: ev_payment_db
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql-payment-volume:/var/lib/mysql
+      - ./payment-service/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - ev-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-analytics:
+    image: mysql:8.0
+    container_name: ev-analytics-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: ev_analytics_db
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    ports:
+      - "3310:3306"
+    volumes:
+      - mysql-analytics-volume:/var/lib/mysql
+      - ./analytics-service/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - ev-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # Microservices
+  # ==========================================
+  identity-service:
+    build:
+      context: ./identity-service
+      dockerfile: Dockerfile
+    container_name: ev-identity-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-identity:3306/ev_identity_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root123
+      JWT_SECRET: k5H7D0qZ1OGfJp7dM87t6R2S3nHlw5kTGBv3dQF4qXU=
+      JWT_EXPIRATION: 3600000
+      JWT_REFRESH_EXPIRATION: 2592000000
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8081:8081"
+    depends_on:
+      mysql-identity:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - ev-network
+    restart: unless-stopped
+
+  data-service:
+    build:
+      context: ./data-service
+      dockerfile: Dockerfile
+    container_name: ev-data-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-data:3306/ev_data_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root123
+      JWT_SECRET: k5H7D0qZ1OGfJp7dM87t6R2S3nHlw5kTGBv3dQF4qXU=
+      IDENTITY_SERVICE_URL: http://api-gateway:8080/identity
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8082:8082"
+    depends_on:
+      mysql-data:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      identity-service:
+        condition: service_started
+    networks:
+      - ev-network
+    restart: unless-stopped
+
+  payment-service:
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    container_name: ev-payment-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-payment:3306/ev_payment_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root123
+      JWT_SECRET: k5H7D0qZ1OGfJp7dM87t6R2S3nHlw5kTGBv3dQF4qXU=
+      IDENTITY_SERVICE_URL: http://api-gateway:8080/identity
+      DATA_SERVICE_URL: http://api-gateway:8080/data
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8083:8083"
+    depends_on:
+      mysql-payment:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      identity-service:
+        condition: service_started
+      data-service:
+        condition: service_started
+    networks:
+      - ev-network
+    restart: unless-stopped
+
+  analytics-service:
+    build:
+      context: ./analytics-service
+      dockerfile: Dockerfile
+    container_name: ev-analytics-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-analytics:3306/ev_analytics_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root123
+      JWT_SECRET: k5H7D0qZ1OGfJp7dM87t6R2S3nHlw5kTGBv3dQF4qXU=
+      IDENTITY_SERVICE_URL: http://api-gateway:8080/identity
+      DATA_SERVICE_URL: http://api-gateway:8080/data
+      PAYMENT_SERVICE_URL: http://api-gateway:8080/payment
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8084:8084"
+    depends_on:
+      mysql-analytics:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      identity-service:
+        condition: service_started
+      data-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+    networks:
+      - ev-network
+    restart: unless-stopped
+
+  # ==========================================
+  # Frontend - React Application
+  # ==========================================
+  ev-frontend:
+    build:
+      context: ./ev-frontend
+      dockerfile: Dockerfile
+    container_name: ev-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      api-gateway:
+        condition: service_started
+    networks:
+      - ev-network
+    restart: unless-stopped
+
+volumes:
+  mysql-identity-data:
+  mysql-data-volume:
+  mysql-payment-volume:
+  mysql-analytics-volume:
+
+networks:
+  ev-network:
+    driver: bridge

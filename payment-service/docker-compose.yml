@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  mysql-payment:
+    image: mysql:8.0
+    container_name: ev-payment-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: ev_payment_db
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql-payment-volume:/var/lib/mysql
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - ev-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ev-payment-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-payment:3306/ev_payment_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root123
+      JWT_SECRET: k5H7D0qZ1OGfJp7dM87t6R2S3nHlw5kTGBv3dQF4qXU=
+      IDENTITY_SERVICE_URL: http://identity-service:8081/identity
+      DATA_SERVICE_URL: http://data-service:8082/data
+    ports:
+      - "8083:8083"
+    depends_on:
+      mysql-payment:
+        condition: service_healthy
+    networks:
+      - ev-network
+    restart: unless-stopped
+
+volumes:
+  mysql-payment-volume:
+
+networks:
+  ev-network:
+    driver: bridge

@@ -1,0 +1,1681 @@
+{
+  "info": {
+    "name": "EV Data Analytics Platform - Complete API",
+    "description": "Complete API collection for EV Data Marketplace with all 4 microservices",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "2.0.0"
+  },
+  "variable": [
+    {
+      "key": "gateway_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "dataset_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🏥 System Health",
+      "item": [
+        {
+          "name": "Eureka Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:8761",
+            "description": "Check Eureka Service Registry"
+          }
+        },
+        {
+          "name": "Gateway Routes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway_url}}/actuator/gateway/routes"
+          }
+        },
+        {
+          "name": "Identity Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway_url}}/identity/actuator/health"
+          }
+        },
+        {
+          "name": "Data Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway_url}}/data/actuator/health"
+          }
+        },
+        {
+          "name": "Payment Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway_url}}/payment/actuator/health"
+          }
+        },
+        {
+          "name": "Analytics Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway_url}}/analytics/actuator/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 Identity Service - Authentication",
+      "item": [
+        {
+          "name": "Register Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.collectionVariables.set('user_id', jsonData.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@evdata.com\",\n  \"password\": \"admin123\",\n  \"fullName\": \"Admin User\",\n  \"role\": \"ADMIN\",\n  \"organization\": \"EV Data Platform\",\n  \"phoneNumber\": \"+84901234567\"\n}"
+            },
+            "url": "{{gateway_url}}/identity/api/auth/register"
+          }
+        },
+        {
+          "name": "Register Provider",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"provider@tesla.com\",\n  \"password\": \"provider123\",\n  \"fullName\": \"Tesla Provider\",\n  \"role\": \"DATA_PROVIDER\",\n  \"organization\": \"Tesla Inc\",\n  \"phoneNumber\": \"+84902345678\"\n}"
+            },
+            "url": "{{gateway_url}}/identity/api/auth/register"
+          }
+        },
+        {
+          "name": "Register Consumer",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"consumer@startup.com\",\n  \"password\": \"consumer123\",\n  \"fullName\": \"Consumer User\",\n  \"role\": \"DATA_CONSUMER\",\n  \"organization\": \"EV Startup\",\n  \"phoneNumber\": \"+84903456789\"\n}"
+            },
+            "url": "{{gateway_url}}/identity/api/auth/register"
+          }
+        },
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('access_token', jsonData.accessToken);",
+                  "pm.collectionVariables.set('refresh_token', jsonData.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@evdata.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": "{{gateway_url}}/identity/api/auth/login"
+          }
+        },
+        {
+          "name": "Login Provider",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('access_token', jsonData.accessToken);",
+                  "pm.collectionVariables.set('refresh_token', jsonData.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"provider@tesla.com\",\n  \"password\": \"provider123\"\n}"
+            },
+            "url": "{{gateway_url}}/identity/api/auth/login"
+          }
+        },
+        {
+          "name": "Login Consumer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('access_token', jsonData.accessToken);",
+                  "pm.collectionVariables.set('refresh_token', jsonData.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"consumer@startup.com\",\n  \"password\": \"consumer123\"\n}"
+            },
+            "url": "{{gateway_url}}/identity/api/auth/login"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('access_token', jsonData.accessToken);",
+                  "pm.collectionVariables.set('refresh_token', jsonData.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+            },
+            "url": "{{gateway_url}}/identity/api/auth/refresh-token"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/identity/api/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 Identity Service - User Management",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/identity/api/users/profile"
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Updated Name\",\n  \"phoneNumber\": \"+84909999999\",\n  \"organization\": \"Updated Organization\",\n  \"address\": \"123 Updated Street\",\n  \"city\": \"Ho Chi Minh City\",\n  \"country\": \"Vietnam\"\n}"
+            },
+            "url": "{{gateway_url}}/identity/api/users/profile"
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"admin123\",\n  \"newPassword\": \"newpassword123\",\n  \"confirmPassword\": \"newpassword123\"\n}"
+            },
+            "url": "{{gateway_url}}/identity/api/users/change-password"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👨‍💼 Identity Service - Admin",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/identity/api/admin/users?page=0&size=20"
+          }
+        },
+        {
+          "name": "Get User Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/identity/api/admin/users/stats"
+          }
+        },
+        {
+          "name": "Update User Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"SUSPENDED\"\n}"
+            },
+            "url": "{{gateway_url}}/identity/api/admin/users/{{user_id}}/status"
+          }
+        },
+        {
+          "name": "Suspend User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Violation of terms\"\n}"
+            },
+            "url": "{{gateway_url}}/identity/api/admin/users/{{user_id}}/suspend"
+          }
+        },
+        {
+          "name": "Cleanup Expired Tokens",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/identity/api/admin/tokens/cleanup"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📁 Data Service - Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway_url}}/data/api/categories"
+          }
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway_url}}/data/api/categories/1"
+          }
+        },
+        {
+          "name": "Create Category (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"CUSTOM_DATA\",\n  \"name\": \"Custom Data\",\n  \"description\": \"Custom dataset category\",\n  \"icon\": \"custom-icon\"\n}"
+            },
+            "url": "{{gateway_url}}/data/api/categories"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Data Service - Datasets",
+      "item": [
+        {
+          "name": "Search Datasets",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"keyword\": \"battery\",\n  \"categoryId\": null,\n  \"dataType\": null,\n  \"pricingModel\": null,\n  \"minPrice\": null,\n  \"maxPrice\": null,\n  \"format\": null,\n  \"region\": null,\n  \"country\": null,\n  \"sortBy\": \"createdAt\",\n  \"sortDirection\": \"DESC\",\n  \"page\": 0,\n  \"size\": 20\n}"
+            },
+            "url": "{{gateway_url}}/data/api/datasets/search"
+          }
+        },
+        {
+          "name": "View Dataset",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway_url}}/data/api/datasets/1/view"
+          }
+        },
+        {
+          "name": "Create Dataset (Provider)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.collectionVariables.set('dataset_id', jsonData.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tesla Model 3 Battery Data Q4 2024\",\n  \"code\": \"TESLA_BATTERY_Q4_2024\",\n  \"categoryId\": 2,\n  \"description\": \"Comprehensive battery performance data for Tesla Model 3 fleet\",\n  \"dataType\": \"ANALYZED\",\n  \"format\": \"CSV\",\n  \"pricingModel\": \"PAY_PER_DOWNLOAD\",\n  \"price\": 99.99,\n  \"usageRights\": \"COMMERCIAL\",\n  \"region\": \"North America\",\n  \"country\": \"USA\",\n  \"size\": \"250MB\",\n  \"recordCount\": 50000,\n  \"tags\": [\"battery\", \"tesla\", \"model3\", \"performance\"],\n  \"anonymized\": true,\n  \"gdprCompliant\": true\n}"
+            },
+            "url": "{{gateway_url}}/data/api/datasets"
+          }
+        },
+        {
+          "name": "Update Dataset (Provider)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Dataset Name\",\n  \"description\": \"Updated description\",\n  \"price\": 89.99,\n  \"tags\": [\"battery\", \"tesla\", \"updated\"]\n}"
+            },
+            "url": "{{gateway_url}}/data/api/datasets/{{dataset_id}}"
+          }
+        },
+        {
+          "name": "Publish Dataset (Provider)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/data/api/datasets/{{dataset_id}}/publish"
+          }
+        },
+        {
+          "name": "Archive Dataset (Provider)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/data/api/datasets/{{dataset_id}}/archive"
+          }
+        },
+        {
+          "name": "Get My Datasets (Provider)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/data/api/datasets/my-datasets?page=0&size=20"
+          }
+        },
+        {
+          "name": "Delete Dataset (Provider)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/data/api/datasets/{{dataset_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔑 Data Service - Access Management",
+      "item": [
+        {
+          "name": "Grant Access (Purchase)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"datasetId\": 1,\n  \"accessType\": \"DOWNLOAD\",\n  \"durationMonths\": null,\n  \"apiCallsLimit\": null\n}"
+            },
+            "url": "{{gateway_url}}/data/api/access/grant"
+          }
+        },
+        {
+          "name": "Get My Accesses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/data/api/access/my-accesses?page=0&size=20"
+          }
+        },
+        {
+          "name": "Download Dataset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/data/api/access/download/1"
+          }
+        },
+        {
+          "name": "Revoke Access (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/data/api/access/1/revoke"
+          }
+        }
+      ]
+    },
+    {
+      "name": "⭐ Data Service - Ratings",
+      "item": [
+        {
+          "name": "Rate Dataset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"datasetId\": 1,\n  \"rating\": 5,\n  \"comment\": \"Excellent dataset with high quality data!\"\n}"
+            },
+            "url": "{{gateway_url}}/data/api/ratings"
+          }
+        },
+        {
+          "name": "Get Dataset Ratings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway_url}}/data/api/ratings/dataset/1?page=0&size=20"
+          }
+        },
+        {
+          "name": "Update Rating",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Updated review\"\n}"
+            },
+            "url": "{{gateway_url}}/data/api/ratings/1"
+          }
+        },
+        {
+          "name": "Delete Rating",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/data/api/ratings/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👨‍💼 Data Service - Admin",
+      "item": [
+        {
+          "name": "Get Data Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/data/api/admin/stats"
+          }
+        },
+        {
+          "name": "Get All Datasets (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/data/api/admin/datasets?page=0&size=20"
+          }
+        },
+        {
+          "name": "Update Dataset Status (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"SUSPENDED\"\n}"
+            },
+            "url": "{{gateway_url}}/data/api/admin/datasets/{{dataset_id}}/status"
+          }
+        },
+        {
+          "name": "Get Provider Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/data/api/admin/providers"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💳 Payment Service - Payment Methods",
+      "item": [
+        {
+          "name": "Add Credit Card",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"CREDIT_CARD\",\n  \"cardNumber\": \"4242424242424242\",\n  \"cardHolderName\": \"John Doe\",\n  \"cardExpMonth\": \"12\",\n  \"cardExpYear\": \"2025\",\n  \"cardCvv\": \"123\",\n  \"isDefault\": true\n}"
+            },
+            "url": "{{gateway_url}}/payment/api/payment-methods"
+          }
+        },
+        {
+          "name": "Add PayPal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"PAYPAL\",\n  \"paypalEmail\": \"john@example.com\",\n  \"isDefault\": false\n}"
+            },
+            "url": "{{gateway_url}}/payment/api/payment-methods"
+          }
+        },
+        {
+          "name": "Get My Payment Methods",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/payment-methods"
+          }
+        },
+        {
+          "name": "Set Default Payment Method",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/payment-methods/1/set-default"
+          }
+        },
+        {
+          "name": "Delete Payment Method",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/payment-methods/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💰 Payment Service - Transactions",
+      "item": [
+        {
+          "name": "Create Transaction (Purchase)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.transactionId) {",
+                  "    pm.collectionVariables.set('transaction_id', jsonData.data.transactionId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"datasetId\": 1,\n  \"transactionType\": \"PURCHASE\",\n  \"amount\": 99.99,\n  \"paymentMethod\": \"CREDIT_CARD\",\n  \"notes\": \"Purchase Tesla battery dataset\"\n}"
+            },
+            "url": "{{gateway_url}}/payment/api/transactions"
+          }
+        },
+        {
+          "name": "Create Subscription",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"datasetId\": 1,\n  \"transactionType\": \"SUBSCRIPTION\",\n  \"amount\": 29.99,\n  \"paymentMethod\": \"CREDIT_CARD\",\n  \"notes\": \"Monthly subscription\"\n}"
+            },
+            "url": "{{gateway_url}}/payment/api/transactions"
+          }
+        },
+        {
+          "name": "Get My Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/transactions/my-transactions?page=0&size=20"
+          }
+        },
+        {
+          "name": "Get Transaction by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/transactions/1"
+          }
+        },
+        {
+          "name": "Get Transaction by Transaction ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/transactions/ref/{{transaction_id}}"
+          }
+        },
+        {
+          "name": "Get Consumer Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/transactions/consumer?page=0&size=20"
+          }
+        },
+        {
+          "name": "Get Provider Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/transactions/provider?page=0&size=20"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔄 Payment Service - Refunds",
+      "item": [
+        {
+          "name": "Request Refund",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transactionId\": 1,\n  \"reason\": \"DATA_QUALITY_ISSUE\",\n  \"description\": \"Dataset quality does not match description\",\n  \"refundAmount\": 99.99\n}"
+            },
+            "url": "{{gateway_url}}/payment/api/refunds"
+          }
+        },
+        {
+          "name": "Get My Refunds",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/refunds/my-refunds?page=0&size=20"
+          }
+        },
+        {
+          "name": "Approve Refund (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Refund approved due to valid reason\"\n}"
+            },
+            "url": "{{gateway_url}}/payment/api/refunds/1/approve"
+          }
+        },
+        {
+          "name": "Reject Refund (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Request does not meet refund criteria\"\n}"
+            },
+            "url": "{{gateway_url}}/payment/api/refunds/1/reject"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💵 Payment Service - Provider Revenue",
+      "item": [
+        {
+          "name": "Get My Revenue (Provider)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/revenue/my-revenue?page=0&size=20"
+          }
+        },
+        {
+          "name": "Get Monthly Revenue (Provider)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/revenue/month?year=2025&month=1"
+          }
+        },
+        {
+          "name": "Get Total Earnings (Provider)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/revenue/total-earnings"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👨‍💼 Payment Service - Admin",
+      "item": [
+        {
+          "name": "Get Payment Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/admin/payment/stats"
+          }
+        },
+        {
+          "name": "Get All Transactions (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/admin/payment/transactions?page=0&size=20"
+          }
+        },
+        {
+          "name": "Get All Refunds (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/admin/payment/refunds?page=0&size=20"
+          }
+        },
+        {
+          "name": "Get Provider Revenues (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/payment/api/admin/payment/provider-revenues?page=0&size=20"
+          }
+        },
+        {
+          "name": "Calculate Monthly Revenue (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"year\": 2025,\n  \"month\": 1\n}"
+            },
+            "url": "{{gateway_url}}/payment/api/admin/payment/calculate-monthly-revenue"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Analytics Service - Reports",
+      "item": [
+        {
+          "name": "Create Battery Health Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportType\": \"BATTERY_HEALTH\",\n  \"datasetId\": 1,\n  \"title\": \"Battery Health Analysis Q4 2024\",\n  \"description\": \"Comprehensive battery health analysis for Q4 2024\",\n  \"parameters\": {\n    \"startDate\": \"2024-10-01\",\n    \"endDate\": \"2024-12-31\",\n    \"vehicleTypes\": [\"Model 3\", \"Model Y\"],\n    \"minSOH\": 80.0,\n    \"regions\": [\"North America\"]\n  }\n}"
+            },
+            "url": "{{gateway_url}}/analytics/api/reports"
+          }
+        },
+        {
+          "name": "Create Charging Pattern Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportType\": \"CHARGING_PATTERN\",\n  \"datasetId\": 1,\n  \"title\": \"Charging Behavior Analysis 2024\",\n  \"description\": \"Analysis of charging patterns and behavior\",\n  \"parameters\": {\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-12-31\",\n    \"chargingTypes\": [\"Fast\", \"Slow\"],\n    \"locations\": [\"Urban\", \"Highway\"]\n  }\n}"
+            },
+            "url": "{{gateway_url}}/analytics/api/reports"
+          }
+        },
+        {
+          "name": "Create Range Analysis Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportType\": \"RANGE_ANALYSIS\",\n  \"datasetId\": 1,\n  \"title\": \"Range Performance Analysis\",\n  \"description\": \"Vehicle range analysis under different conditions\",\n  \"parameters\": {\n    \"weatherConditions\": [\"Summer\", \"Winter\"],\n    \"drivingStyles\": [\"Eco\", \"Sport\"],\n    \"terrainTypes\": [\"Flat\", \"Hilly\"]\n  }\n}"
+            },
+            "url": "{{gateway_url}}/analytics/api/reports"
+          }
+        },
+        {
+          "name": "Create Energy Consumption Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportType\": \"ENERGY_CONSUMPTION\",\n  \"datasetId\": 1,\n  \"title\": \"Energy Efficiency Report 2024\",\n  \"description\": \"Detailed energy consumption analysis\",\n  \"parameters\": {\n    \"vehicleModels\": [\"Model 3\", \"Model S\"],\n    \"routes\": [\"City\", \"Highway\", \"Mixed\"]\n  }\n}"
+            },
+            "url": "{{gateway_url}}/analytics/api/reports"
+          }
+        },
+        {
+          "name": "Get My Reports",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/analytics/api/reports/my-reports?page=0&size=20"
+          }
+        },
+        {
+          "name": "Get Report by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/analytics/api/reports/1"
+          }
+        },
+        {
+          "name": "Delete Report",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/analytics/api/reports/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📈 Analytics Service - Dashboards",
+      "item": [
+        {
+          "name": "Create Overview Dashboard",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"EV Fleet Overview Dashboard\",\n  \"description\": \"Real-time overview of entire EV fleet\",\n  \"dashboardType\": \"OVERVIEW\",\n  \"config\": {\n    \"refreshInterval\": 30,\n    \"layout\": \"grid\",\n    \"theme\": \"dark\"\n  },\n  \"widgets\": [\n    {\n      \"type\": \"metric\",\n      \"title\": \"Total Vehicles\",\n      \"metric\": \"total_vehicles\",\n      \"size\": \"small\"\n    },\n    {\n      \"type\": \"chart\",\n      \"title\": \"Battery Health Trend\",\n      \"chartType\": \"line\",\n      \"dataSource\": \"battery_health\",\n      \"size\": \"large\"\n    },\n    {\n      \"type\": \"map\",\n      \"title\": \"Vehicle Locations\",\n      \"dataSource\": \"gps_data\",\n      \"size\": \"large\"\n    }\n  ],\n  \"isPublic\": false\n}"
+            },
+            "url": "{{gateway_url}}/analytics/api/dashboards"
+          }
+        },
+        {
+          "name": "Create Battery Dashboard",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Battery Performance Dashboard\",\n  \"description\": \"Detailed battery metrics and analytics\",\n  \"dashboardType\": \"BATTERY\",\n  \"config\": {\n    \"refreshInterval\": 60,\n    \"layout\": \"grid\"\n  },\n  \"widgets\": [\n    {\n      \"type\": \"gauge\",\n      \"title\": \"Average SOH\",\n      \"metric\": \"average_soh\",\n      \"thresholds\": {\"warning\": 85, \"critical\": 80}\n    },\n    {\n      \"type\": \"chart\",\n      \"title\": \"SOC Distribution\",\n      \"chartType\": \"histogram\",\n      \"dataSource\": \"soc_data\"\n    },\n    {\n      \"type\": \"chart\",\n      \"title\": \"Degradation Rate\",\n      \"chartType\": \"line\",\n      \"dataSource\": \"degradation\"\n    }\n  ],\n  \"isPublic\": true\n}"
+            },
+            "url": "{{gateway_url}}/analytics/api/dashboards"
+          }
+        },
+        {
+          "name": "Create Charging Dashboard",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Charging Station Analytics\",\n  \"description\": \"Charging infrastructure performance\",\n  \"dashboardType\": \"CHARGING\",\n  \"config\": {\n    \"refreshInterval\": 15,\n    \"layout\": \"flex\"\n  },\n  \"widgets\": [\n    {\n      \"type\": \"metric\",\n      \"title\": \"Active Sessions\",\n      \"metric\": \"active_charging_sessions\"\n    },\n    {\n      \"type\": \"chart\",\n      \"title\": \"Charging Power\",\n      \"chartType\": \"area\",\n      \"dataSource\": \"charging_power\"\n    },\n    {\n      \"type\": \"heatmap\",\n      \"title\": \"Peak Hours\",\n      \"dataSource\": \"charging_times\"\n    }\n  ],\n  \"isPublic\": false\n}"
+            },
+            "url": "{{gateway_url}}/analytics/api/dashboards"
+          }
+        },
+        {
+          "name": "Get My Dashboards",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/analytics/api/dashboards/my-dashboards?page=0&size=20"
+          }
+        },
+        {
+          "name": "Get Public Dashboards",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway_url}}/analytics/api/dashboards/public?page=0&size=20"
+          }
+        },
+        {
+          "name": "Get Dashboard by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/analytics/api/dashboards/1"
+          }
+        },
+        {
+          "name": "Update Dashboard",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Dashboard Name\",\n  \"description\": \"Updated description\",\n  \"config\": {\n    \"refreshInterval\": 45\n  }\n}"
+            },
+            "url": "{{gateway_url}}/analytics/api/dashboards/1"
+          }
+        },
+        {
+          "name": "Delete Dashboard",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/analytics/api/dashboards/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🤖 Analytics Service - AI Predictions",
+      "item": [
+        {
+          "name": "Predict Battery Degradation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"predictionType\": \"BATTERY_DEGRADATION\",\n  \"datasetId\": 1,\n  \"inputData\": {\n    \"currentSOH\": 92.5,\n    \"vehicleAge\": 2.5,\n    \"cycleCount\": 450,\n    \"averageTemperature\": 25.0,\n    \"fastChargingPercentage\": 35.0,\n    \"averageDepthOfDischarge\": 70.0\n  },\n  \"modelVersion\": \"v1.0\"\n}"
+            },
+            "url": "{{gateway_url}}/analytics/api/predictions"
+          }
+        },
+        {
+          "name": "Predict Charging Demand",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"predictionType\": \"CHARGING_DEMAND\",\n  \"datasetId\": 1,\n  \"inputData\": {\n    \"location\": \"Downtown\",\n    \"dayOfWeek\": \"Monday\",\n    \"hour\": 18,\n    \"weather\": \"Clear\",\n    \"temperature\": 22.0,\n    \"historicalDemand\": 45.0\n  },\n  \"modelVersion\": \"v1.0\"\n}"
+            },
+            "url": "{{gateway_url}}/analytics/api/predictions"
+          }
+        },
+        {
+          "name": "Predict Range",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"predictionType\": \"RANGE_PREDICTION\",\n  \"datasetId\": 1,\n  \"inputData\": {\n    \"currentSOC\": 85.0,\n    \"batteryCapacity\": 75.0,\n    \"temperature\": 20.0,\n    \"drivingStyle\": \"Eco\",\n    \"terrain\": \"Flat\",\n    \"hvacUsage\": \"Medium\"\n  },\n  \"modelVersion\": \"v1.0\"\n}"
+            },
+            "url": "{{gateway_url}}/analytics/api/predictions"
+          }
+        },
+        {
+          "name": "Predict Maintenance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"predictionType\": \"MAINTENANCE_PREDICTION\",\n  \"datasetId\": 1,\n  \"inputData\": {\n    \"mileage\": 45000,\n    \"vehicleAge\": 3.0,\n    \"lastMaintenanceDate\": \"2024-06-01\",\n    \"diagnosticCodes\": [],\n    \"batteryHealth\": 92.0,\n    \"brakeWear\": 65.0\n  },\n  \"modelVersion\": \"v1.0\"\n}"
+            },
+            "url": "{{gateway_url}}/analytics/api/predictions"
+          }
+        },
+        {
+          "name": "Get My Predictions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/analytics/api/predictions/my-predictions?page=0&size=20"
+          }
+        },
+        {
+          "name": "Get Prediction by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/analytics/api/predictions/1"
+          }
+        },
+        {
+          "name": "Delete Prediction",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/analytics/api/predictions/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💡 Analytics Service - Insights",
+      "item": [
+        {
+          "name": "Get Active Insights",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway_url}}/analytics/api/insights/active?page=0&size=20"
+          }
+        },
+        {
+          "name": "Get Insights by Dataset",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway_url}}/analytics/api/insights/dataset/1?page=0&size=20"
+          }
+        },
+        {
+          "name": "Get Insight by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway_url}}/analytics/api/insights/1"
+          }
+        },
+        {
+          "name": "Deactivate Insight",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/analytics/api/insights/1/deactivate"
+          }
+        }
+      ]
+    },
+    {
+      "name": "✅ Analytics Service - Data Quality",
+      "item": [
+        {
+          "name": "Assess Data Quality",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recordCount\": 50000,\n  \"completeness\": 95.5,\n  \"nullValues\": 2250,\n  \"duplicates\": 125,\n  \"outliers\": 450,\n  \"validRecords\": 47175\n}"
+            },
+            "url": "{{gateway_url}}/analytics/api/quality/assess/1"
+          }
+        },
+        {
+          "name": "Get Latest Quality Score",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway_url}}/analytics/api/quality/dataset/1/latest"
+          }
+        },
+        {
+          "name": "Get Quality History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway_url}}/analytics/api/quality/dataset/1/history?page=0&size=20"
+          }
+        },
+        {
+          "name": "Get Low Quality Datasets (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/analytics/api/quality/low-quality?threshold=70.0&page=0&size=20"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👨‍💼 Analytics Service - Admin",
+      "item": [
+        {
+          "name": "Get Analytics Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/analytics/api/admin/analytics/stats"
+          }
+        },
+        {
+          "name": "Get All Reports (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/analytics/api/admin/analytics/reports?page=0&size=20"
+          }
+        },
+        {
+          "name": "Get All Dashboards (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/analytics/api/admin/analytics/dashboards?page=0&size=20"
+          }
+        },
+        {
+          "name": "Get All Predictions (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "url": "{{gateway_url}}/analytics/api/admin/analytics/predictions?page=0&size=20"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧪 Test Workflows",
+      "item": [
+        {
+          "name": "Complete Consumer Flow",
+          "item": [
+            {
+              "name": "1. Register Consumer",
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"test.consumer@example.com\",\n  \"password\": \"test123\",\n  \"fullName\": \"Test Consumer\",\n  \"role\": \"DATA_CONSUMER\",\n  \"organization\": \"Test Org\"\n}"
+                },
+                "url": "{{gateway_url}}/identity/api/auth/register"
+              }
+            },
+            {
+              "name": "2. Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "pm.collectionVariables.set('access_token', jsonData.accessToken);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"test.consumer@example.com\",\n  \"password\": \"test123\"\n}"
+                },
+                "url": "{{gateway_url}}/identity/api/auth/login"
+              }
+            },
+            {
+              "name": "3. Search Datasets",
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"keyword\": \"battery\",\n  \"page\": 0,\n  \"size\": 10\n}"
+                },
+                "url": "{{gateway_url}}/data/api/datasets/search"
+              }
+            },
+            {
+              "name": "4. Add Payment Method",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{access_token}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"CREDIT_CARD\",\n  \"cardNumber\": \"4242424242424242\",\n  \"cardHolderName\": \"Test User\",\n  \"cardExpMonth\": \"12\",\n  \"cardExpYear\": \"2025\",\n  \"cardCvv\": \"123\",\n  \"isDefault\": true\n}"
+                },
+                "url": "{{gateway_url}}/payment/api/payment-methods"
+              }
+            },
+            {
+              "name": "5. Purchase Dataset",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{access_token}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"datasetId\": 1,\n  \"transactionType\": \"PURCHASE\",\n  \"amount\": 99.99,\n  \"paymentMethod\": \"CREDIT_CARD\"\n}"
+                },
+                "url": "{{gateway_url}}/payment/api/transactions"
+              }
+            },
+            {
+              "name": "6. Download Dataset",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {"key": "Authorization", "value": "Bearer {{access_token}}"}
+                ],
+                "url": "{{gateway_url}}/data/api/access/download/1"
+              }
+            },
+            {
+              "name": "7. Rate Dataset",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{access_token}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"datasetId\": 1,\n  \"rating\": 5,\n  \"comment\": \"Great dataset!\"\n}"
+                },
+                "url": "{{gateway_url}}/data/api/ratings"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Complete Provider Flow",
+          "item": [
+            {
+              "name": "1. Register Provider",
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"test.provider@example.com\",\n  \"password\": \"test123\",\n  \"fullName\": \"Test Provider\",\n  \"role\": \"DATA_PROVIDER\",\n  \"organization\": \"Provider Org\"\n}"
+                },
+                "url": "{{gateway_url}}/identity/api/auth/register"
+              }
+            },
+            {
+              "name": "2. Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "pm.collectionVariables.set('access_token', jsonData.accessToken);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"test.provider@example.com\",\n  \"password\": \"test123\"\n}"
+                },
+                "url": "{{gateway_url}}/identity/api/auth/login"
+              }
+            },
+            {
+              "name": "3. Create Dataset",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData.data && jsonData.data.id) {",
+                      "    pm.collectionVariables.set('dataset_id', jsonData.data.id);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{access_token}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Test Battery Dataset\",\n  \"code\": \"TEST_BATTERY_001\",\n  \"categoryId\": 2,\n  \"description\": \"Test dataset\",\n  \"dataType\": \"RAW\",\n  \"format\": \"CSV\",\n  \"pricingModel\": \"PAY_PER_DOWNLOAD\",\n  \"price\": 49.99,\n  \"usageRights\": \"RESEARCH_ONLY\"\n}"
+                },
+                "url": "{{gateway_url}}/data/api/datasets"
+              }
+            },
+            {
+              "name": "4. Publish Dataset",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {"key": "Authorization", "value": "Bearer {{access_token}}"}
+                ],
+                "url": "{{gateway_url}}/data/api/datasets/{{dataset_id}}/publish"
+              }
+            },
+            {
+              "name": "5. View My Revenue",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {"key": "Authorization", "value": "Bearer {{access_token}}"}
+                ],
+                "url": "{{gateway_url}}/payment/api/revenue/my-revenue"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Analytics Flow",
+          "item": [
+            {
+              "name": "1. Create Analysis Report",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{access_token}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reportType\": \"BATTERY_HEALTH\",\n  \"datasetId\": 1,\n  \"title\": \"Test Report\",\n  \"description\": \"Test analysis\"\n}"
+                },
+                "url": "{{gateway_url}}/analytics/api/reports"
+              }
+            },
+            {
+              "name": "2. Create Dashboard",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{access_token}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Test Dashboard\",\n  \"dashboardType\": \"OVERVIEW\",\n  \"isPublic\": false\n}"
+                },
+                "url": "{{gateway_url}}/analytics/api/dashboards"
+              }
+            },
+            {
+              "name": "3. Create AI Prediction",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{access_token}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"predictionType\": \"BATTERY_DEGRADATION\",\n  \"datasetId\": 1,\n  \"inputData\": {\n    \"currentSOH\": 90.0,\n    \"vehicleAge\": 2.0,\n    \"cycleCount\": 400\n  }\n}"
+                },
+                "url": "{{gateway_url}}/analytics/api/predictions"
+              }
+            },
+            {
+              "name": "4. Assess Data Quality",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{access_token}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"recordCount\": 10000,\n  \"completeness\": 95.0,\n  \"nullValues\": 500,\n  \"duplicates\": 50,\n  \"outliers\": 100\n}"
+                },
+                "url": "{{gateway_url}}/analytics/api/quality/assess/1"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  }
+}

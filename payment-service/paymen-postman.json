@@ -1,0 +1,572 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-a1b2-c3d4-e5f6a1b2c3d4",
+    "name": "Payment Service (EV)",
+    "description": "Collection để test API của Payment Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "TransactionController",
+      "item": [
+        {
+          "name": "Create Transaction",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"datasetId\": 1,\n  \"transactionType\": \"PURCHASE\",\n  \"amount\": 99.99,\n  \"paymentMethod\": \"CREDIT_CARD\",\n  \"paymentMethodId\": 1,\n  \"subscriptionDays\": null,\n  \"apiCallsLimit\": null,\n  \"notes\": \"Test purchase from Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "transactions"
+              ]
+            },
+            "description": "Tạo một giao dịch mới"
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/my-transactions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "transactions",
+                "my-transactions"
+              ]
+            },
+            "description": "Lấy tất cả giao dịch của user hiện tại"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Consumer Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/consumer",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "transactions",
+                "consumer"
+              ]
+            },
+            "description": "Lấy giao dịch với vai trò DATA_CONSUMER"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Provider Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/provider",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "transactions",
+                "provider"
+              ]
+            },
+            "description": "Lấy giao dịch với vai trò DATA_PROVIDER"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Transaction by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "transactions",
+                "1"
+              ]
+            },
+            "description": "Lấy giao dịch theo ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Transaction by Ref",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/ref/EVT_TEST123",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "transactions",
+                "ref",
+                "EVT_TEST123"
+              ]
+            },
+            "description": "Lấy giao dịch theo transactionId (ref)"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints từ TransactionController"
+    },
+    {
+      "name": "PaymentMethodController",
+      "item": [
+        {
+          "name": "Add Payment Method",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"CREDIT_CARD\",\n  \"cardNumber\": \"4111222233334444\",\n  \"cardHolderName\": \"Test User\",\n  \"cardExpMonth\": \"12\",\n  \"cardExpYear\": \"2028\",\n  \"cardCvv\": \"123\",\n  \"isDefault\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payment-methods",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payment-methods"
+              ]
+            },
+            "description": "Thêm một phương thức thanh toán mới"
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Payment Methods",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/payment-methods",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payment-methods"
+              ]
+            },
+            "description": "Lấy danh sách PTTT của user hiện tại"
+          },
+          "response": []
+        },
+        {
+          "name": "Set Default Payment Method",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/payment-methods/1/set-default",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payment-methods",
+                "1",
+                "set-default"
+              ]
+            },
+            "description": "Đặt PTTT làm mặc định"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Payment Method",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/payment-methods/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payment-methods",
+                "1"
+              ]
+            },
+            "description": "Xóa PTTT (thực chất là set inactive)"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints từ PaymentMethodController"
+    },
+    {
+      "name": "RefundController",
+      "item": [
+        {
+          "name": "Create Refund Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transactionId\": 1,\n  \"amount\": 50.00,\n  \"reason\": \"CUSTOMER_REQUEST\",\n  \"description\": \"Không hài lòng về chất lượng dataset\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/refunds",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "refunds"
+              ]
+            },
+            "description": "Tạo yêu cầu hoàn tiền"
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Refunds",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/refunds/my-refunds",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "refunds",
+                "my-refunds"
+              ]
+            },
+            "description": "Lấy danh sách yêu cầu hoàn tiền của user"
+          },
+          "response": []
+        },
+        {
+          "name": "[ADMIN] Approve Refund",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/refunds/1/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "refunds",
+                "1",
+                "approve"
+              ]
+            },
+            "description": "ADMIN duyệt yêu cầu hoàn tiền"
+          },
+          "response": []
+        },
+        {
+          "name": "[ADMIN] Reject Refund",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/refunds/1/reject?reason=Yeu cau khong hop le",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "refunds",
+                "1",
+                "reject"
+              ],
+              "query": [
+                {
+                  "key": "reason",
+                  "value": "Yeu cau khong hop le"
+                }
+              ]
+            },
+            "description": "ADMIN từ chối yêu cầu hoàn tiền"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints từ RefundController"
+    },
+    {
+      "name": "ProviderRevenueController",
+      "item": [
+        {
+          "name": "Get My Revenue",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/revenue/my-revenue",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "revenue",
+                "my-revenue"
+              ]
+            },
+            "description": "Lấy doanh thu của DATA_PROVIDER"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Revenue by Month",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/revenue/month?year=2024&month=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "revenue",
+                "month"
+              ],
+              "query": [
+                {
+                  "key": "year",
+                  "value": "2024"
+                },
+                {
+                  "key": "month",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Lấy doanh thu theo tháng của DATA_PROVIDER"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Total Earnings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/revenue/total-earnings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "revenue",
+                "total-earnings"
+              ]
+            },
+            "description": "Lấy tổng thu nhập đã thanh toán của DATA_PROVIDER"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints từ ProviderRevenueController (Yêu cầu role DATA_PROVIDER)"
+    },
+    {
+      "name": "AdminPaymentController",
+      "item": [
+        {
+          "name": "Get Payment Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/payment/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "payment",
+                "stats"
+              ]
+            },
+            "description": "Lấy thống kê thanh toán tổng quan"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/payment/transactions?status=COMPLETED",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "payment",
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "COMPLETED"
+                }
+              ]
+            },
+            "description": "Lấy tất cả giao dịch, có thể lọc theo status"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Refunds",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/payment/refunds?status=PENDING",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "payment",
+                "refunds"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "PENDING"
+                }
+              ]
+            },
+            "description": "Lấy tất cả yêu cầu hoàn tiền, có thể lọc theo status"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Provider Revenues",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/payment/provider-revenues",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "payment",
+                "provider-revenues"
+              ]
+            },
+            "description": "Lấy tất cả doanh thu của các provider"
+          },
+          "response": []
+        },
+        {
+          "name": "Calculate Monthly Revenue",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/payment/calculate-monthly-revenue?year=2024&month=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "payment",
+                "calculate-monthly-revenue"
+              ],
+              "query": [
+                {
+                  "key": "year",
+                  "value": "2024"
+                },
+                {
+                  "key": "month",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Kích hoạt việc tính toán doanh thu hàng tháng cho provider"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints từ AdminPaymentController (Yêu cầu role ADMIN)"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8083/payment",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "YOUR_ADMIN_JWT_TOKEN",
+      "type": "string"
+    }
+  ]
+}

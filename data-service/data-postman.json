@@ -1,0 +1,802 @@
+{
+  "info": {
+    "_postman_id": "c6a2e8e0-1c5a-4b0d-9a6a-d4e5f0d3a2b1",
+    "name": "Data Service (EV)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Datasets (DatasetController)",
+      "item": [
+        {
+          "name": "[PUBLIC] Search Datasets",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"keyword\": \"behavior\",\n    \"categoryId\": 1,\n    \"dataType\": null,\n    \"format\": \"CSV\",\n    \"pricingModel\": \"FREE\",\n    \"usageRights\": \"RESEARCH_ONLY\",\n    \"minPrice\": 0,\n    \"maxPrice\": 100,\n    \"sortBy\": \"rating\",\n    \"sortDirection\": \"DESC\",\n    \"page\": 0,\n    \"size\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/datasets/search",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "datasets",
+                "search"
+              ]
+            },
+            "description": "Tìm kiếm và phân trang các dataset đã PUBLISHED."
+          },
+          "response": []
+        },
+        {
+          "name": "[PUBLIC] View Dataset Public",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/datasets/public/1/view",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "datasets",
+                "public",
+                "1",
+                "view"
+              ]
+            },
+            "description": "API public để xem thông tin cơ bản của dataset (tăng view count)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Dataset By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/datasets/1",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "datasets",
+                "1"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Lấy chi tiết dataset. Cần xác thực. Tăng view count."
+          },
+          "response": []
+        },
+        {
+          "name": "[PROVIDER] Create Dataset",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Vinfast VF8 Driving Data Q1-2024 (HCMC)\",\n    \"code\": \"VF8_DRIVING_Q1_2024_HCMC\",\n    \"description\": \"Dữ liệu hành vi lái xe, tốc độ, gia tốc, phanh từ 100 xe VF8 tại TP.HCM trong Q1/2024.\",\n    \"categoryId\": 1,\n    \"dataType\": \"RAW\",\n    \"format\": \"CSV\",\n    \"pricingModel\": \"PAY_PER_DOWNLOAD\",\n    \"price\": 50.00,\n    \"currency\": \"USD\",\n    \"usageRights\": \"RESEARCH_ONLY\",\n    \"region\": \"Asia\",\n    \"country\": \"Vietnam\",\n    \"city\": \"Ho Chi Minh City\",\n    \"dataStartDate\": \"2024-01-01T00:00:00\",\n    \"dataEndDate\": \"2024-03-31T23:59:59\",\n    \"fileUrl\": \"s3://my-bucket/datasets/vf8_q1_2024.csv\",\n    \"fileSize\": 104857600,\n    \"recordCount\": 500000,\n    \"apiEndpoint\": null,\n    \"tags\": \"vinfast, vf8, driving data, hcmc, raw\",\n    \"sampleData\": \"timestamp,speed,acceleration,brake_pressure\\n2024-01-01T00:01:00,45.5,0.2,-0.1\\n\",\n    \"schema\": \"{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"timestamp\\\":{\\\"type\\\":\\\"string\\\",\\\"format\\\":\\\"date-time\\\"},\\\"speed\\\":{\\\"type\\\":\\\"number\\\"}}}\",\n    \"anonymized\": true,\n    \"gdprCompliant\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/datasets",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "datasets"
+              ]
+            },
+            "description": "Tạo dataset mới (status: DRAFT). Cần role DATA_PROVIDER."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Dataset",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Vinfast VF8 Driving Data Q1-2024 (HCMC) - Updated\",\n    \"code\": \"VF8_DRIVING_Q1_2024_HCMC\",\n    \"description\": \"Dữ liệu hành vi lái xe, tốc độ, gia tốc, phanh từ 100 xe VF8 tại TP.HCM trong Q1/2024. Đã cập nhật mô tả.\",\n    \"categoryId\": 1,\n    \"dataType\": \"RAW\",\n    \"format\": \"CSV\",\n    \"pricingModel\": \"PAY_PER_DOWNLOAD\",\n    \"price\": 55.00,\n    \"currency\": \"USD\",\n    \"usageRights\": \"RESEARCH_ONLY\",\n    \"region\": \"Asia\",\n    \"country\": \"Vietnam\",\n    \"city\": \"Ho Chi Minh City\",\n    \"dataStartDate\": \"2024-01-01T00:00:00\",\n    \"dataEndDate\": \"2024-03-31T23:59:59\",\n    \"fileUrl\": \"s3://my-bucket/datasets/vf8_q1_2024_v2.csv\",\n    \"fileSize\": 104857600,\n    \"recordCount\": 500000,\n    \"apiEndpoint\": null,\n    \"tags\": \"vinfast, vf8, driving data, hcmc, raw, updated\",\n    \"sampleData\": \"timestamp,speed,acceleration,brake_pressure\\n2024-01-01T00:01:00,45.5,0.2,-0.1\\n\",\n    \"schema\": \"{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"timestamp\\\":{\\\"type\\\":\\\"string\\\",\\\"format\\\":\\\"date-time\\\"},\\\"speed\\\":{\\\"type\\\":\\\"number\\\"}}}\",\n    \"anonymized\": true,\n    \"gdprCompliant\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/datasets/1",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "datasets",
+                "1"
+              ]
+            },
+            "description": "Cập nhật dataset. Chỉ chủ sở hữu hoặc ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "Publish Dataset",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/datasets/1/publish",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "datasets",
+                "1",
+                "publish"
+              ]
+            },
+            "description": "Chuyển status của dataset từ DRAFT sang PUBLISHED. Chỉ chủ sở hữu hoặc ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "[PROVIDER] Get My Datasets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/my-datasets",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "my-datasets"
+              ]
+            },
+            "description": "Lấy danh sách các dataset do user hiện tại tạo."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Dataset",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/datasets/1",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "datasets",
+                "1"
+              ]
+            },
+            "description": "Xóa dataset. Chỉ chủ sở hữu hoặc ADMIN."
+          },
+          "response": []
+        }
+      ],
+      "description": "Quản lý và tìm kiếm Datasets."
+    },
+    {
+      "name": "Categories (DataCategoryController)",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/categories",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Active Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/categories/active",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "categories",
+                "active"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Category By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/categories/1",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "categories",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Category By Code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/categories/code/DRIVING_BEHAVIOR",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "categories",
+                "code",
+                "DRIVING_BEHAVIOR"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[ADMIN] Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Predictive Maintenance\",\n    \"code\": \"PREDICTIVE_MAINTENANCE\",\n    \"description\": \"Dữ liệu phục vụ bảo trì dự đoán, cảnh báo hỏng hóc.\",\n    \"iconUrl\": \"/icons/maintenance.png\",\n    \"type\": \"VEHICLE_DIAGNOSTICS\",\n    \"active\": true,\n    \"displayOrder\": 7\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/categories",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[ADMIN] Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Predictive Maintenance (Updated)\",\n    \"code\": \"PREDICTIVE_MAINTENANCE\",\n    \"description\": \"Dữ liệu phục vụ bảo trì dự đoán, cảnh báo hỏng hóc. (Updated)\",\n    \"iconUrl\": \"/icons/maintenance_v2.png\",\n    \"type\": \"VEHICLE_DIAGNOSTICS\",\n    \"active\": true,\n    \"displayOrder\": 7\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/categories/7",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "categories",
+                "7"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[ADMIN] Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/categories/7",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "categories",
+                "7"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Quản lý các danh mục dữ liệu."
+    },
+    {
+      "name": "Ratings (DatasetRatingController)",
+      "item": [
+        {
+          "name": "[CONSUMER] Rate Dataset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"datasetId\": 1,\n    \"rating\": 5,\n    \"comment\": \"Dữ liệu rất chi tiết và hữu ích cho nghiên cứu của tôi!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/ratings",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "ratings"
+              ]
+            },
+            "description": "Đánh giá một dataset. Cần phải có quyền truy cập dataset đó trước."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Dataset Ratings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/ratings/dataset/1",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "ratings",
+                "dataset",
+                "1"
+              ]
+            },
+            "description": "Lấy tất cả đánh giá của một dataset."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Ratings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/ratings/my-ratings",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "ratings",
+                "my-ratings"
+              ]
+            },
+            "description": "Lấy các đánh giá của user hiện tại."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Rating",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/ratings/1",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "ratings",
+                "1"
+              ]
+            },
+            "description": "Xóa đánh giá. Chỉ chủ sở hữu đánh giá hoặc ADMIN."
+          },
+          "response": []
+        }
+      ],
+      "description": "Quản lý đánh giá (ratings) cho datasets."
+    },
+    {
+      "name": "Access (DatasetAccessController)",
+      "item": [
+        {
+          "name": "[CONSUMER] Grant Access",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"datasetId\": 1,\n    \"accessType\": \"DOWNLOAD\", \n    \"durationDays\": null,\n    \"apiCallsLimit\": 0\n}\n\n// {\n//     \"datasetId\": 2,\n//     \"accessType\": \"API\", \n//     \"durationDays\": 30,\n//     \"apiCallsLimit\": 10000\n// }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/access/grant",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "access",
+                "grant"
+              ]
+            },
+            "description": "Cấp quyền truy cập (mua) dataset. Cần role DATA_CONSUMER."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Accesses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/access/my-accesses",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "access",
+                "my-accesses"
+              ]
+            },
+            "description": "Lấy danh sách các quyền truy cập của user hiện tại."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Access By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/access/1",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "access",
+                "1"
+              ]
+            },
+            "description": "Lấy chi tiết một quyền truy cập. Chỉ chủ sở hữu hoặc ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "Record Download",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/access/download/1",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "access",
+                "download",
+                "1"
+              ]
+            },
+            "description": "Ghi nhận một lượt download. Cần có access 'ACTIVE' cho datasetId này."
+          },
+          "response": []
+        },
+        {
+          "name": "Record API Call",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/access/api-call/1?apiToken=YOUR_API_TOKEN",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "access",
+                "api-call",
+                "1"
+              ],
+              "query": [
+                {
+                  "key": "apiToken",
+                  "value": "YOUR_API_TOKEN"
+                }
+              ]
+            },
+            "description": "Ghi nhận một lượt gọi API. Cần có access 'ACTIVE' và đúng apiToken."
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke Access",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/access/1/revoke",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "access",
+                "1",
+                "revoke"
+              ]
+            },
+            "description": "Thu hồi quyền truy cập. Chỉ chủ sở hữu, provider của dataset, hoặc ADMIN."
+          },
+          "response": []
+        }
+      ],
+      "description": "Quản lý quyền truy cập (access) vào datasets."
+    },
+    {
+      "name": "Admin (AdminDataController)",
+      "item": [
+        {
+          "name": "[ADMIN] Get Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/admin/stats",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "stats"
+              ]
+            },
+            "description": "Lấy thống kê toàn hệ thống. Cần role ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "[ADMIN] Get All Datasets (Filter by Status)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/admin/datasets?status=DRAFT",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "datasets"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "DRAFT",
+                  "description": "Lọc theo status (DRAFT, PUBLISHED, ARCHIVED, ...)"
+                }
+              ]
+            },
+            "description": "Lấy tất cả dataset (cho admin). Cần role ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "[ADMIN] Update Dataset Status",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/admin/datasets/1/status?status=PUBLISHED",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "datasets",
+                "1",
+                "status"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "PUBLISHED",
+                  "description": "Status mới (PUBLISHED, ARCHIVED, SUSPENDED)"
+                }
+              ]
+            },
+            "description": "Cập nhật status của dataset (ví dụ: duyệt, treo). Cần role ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "[ADMIN] Get All Accesses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/admin/accesses",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "accesses"
+              ]
+            },
+            "description": "Lấy tất cả các lượt cấp quyền. Cần role ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "[ADMIN] Get Providers Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/admin/providers",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "providers"
+              ]
+            },
+            "description": "Lấy thống kê về các Data Providers. Cần role ADMIN."
+          },
+          "response": []
+        }
+      ],
+      "description": "Các API dành riêng cho vai trò ADMIN.",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{TOKEN}}",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{TOKEN}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:8082/data"
+    },
+    {
+      "key": "TOKEN",
+      "value": "YOUR_JWT_TOKEN_HERE"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+# Maven
+target/
+!target/payment-service-1.0.0.jar
+.mvn/
+mvnw
+mvnw.cmd
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.eclipse/
+.settings/
+.project
+.classpath
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+src/test/
+
+# Temp files
+*.tmp
+*.bak
+*.swp
+*~

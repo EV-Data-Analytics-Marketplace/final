@@ -1,0 +1,634 @@
+{
+    "info": {
+        "_postman_id": "c1f2a3b4-d5e6-f7a8-b9c0-d1e2f3a4b5c6",
+        "name": "Identity Service (EV)",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Auth API",
+            "description": "Endpoints for Authentication (Login, Register, Refresh)",
+            "item": [
+                {
+                    "name": "[Auth] 1. Register - Data Consumer",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"new.consumer@example.com\",\n  \"password\": \"password123\",\n  \"fullName\": \"New Consumer User\",\n  \"role\": \"DATA_CONSUMER\",\n  \"organization\": \"Example Corp\",\n  \"phoneNumber\": \"0987654321\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/auth/register",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "register"
+                            ]
+                        },
+                        "description": "Registers a new DATA_CONSUMER."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[Auth] 2. Login - Admin",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "pm.collectionVariables.set(\"adminToken\", jsonData.accessToken);",
+                                    "pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);",
+                                    "console.log(\"Admin Token Set: \" + jsonData.accessToken);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin@evdata.com\",\n  \"password\": \"admin123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "Logs in the default admin user and saves the token to `adminToken` variable."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[Auth] 3. Login - Data Consumer",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);",
+                                    "pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);",
+                                    "console.log(\"User Token Set: \" + jsonData.accessToken);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"consumer@startup.com\",\n  \"password\": \"consumer123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "Logs in the default data consumer user and saves the token to `accessToken` variable."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[Auth] 4. Refresh Token",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "// This script assumes you ran a login request first to get a refresh token",
+                                    "var jsonData = pm.response.json();",
+                                    "pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);",
+                                    "pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);",
+                                    "console.log(\"Token refreshed. New Access Token: \" + jsonData.accessToken);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/auth/refresh-token",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "refresh-token"
+                            ]
+                        },
+                        "description": "Uses the `refreshToken` variable to get a new `accessToken`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[Auth] 5. Logout",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/auth/logout",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "logout"
+                            ]
+                        },
+                        "description": "Logs out the user by revoking refresh tokens. Uses `accessToken`."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "User API",
+            "description": "Endpoints for regular authenticated users.",
+            "item": [
+                {
+                    "name": "[User] Get My Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/users/profile",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "users",
+                                "profile"
+                            ]
+                        },
+                        "description": "Gets the profile of the currently logged-in user."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[User] Update My Profile",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"consumer@startup.com\",\n  \"fullName\": \"Research Team (Updated)\",\n  \"phoneNumber\": \"1234567890\",\n  \"organization\": \"EV Startup Research\",\n  \"role\": \"DATA_CONSUMER\",\n  \"address\": \"123 Main St\",\n  \"country\": \"USA\",\n  \"city\": \"San Francisco\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/users/profile",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "users",
+                                "profile"
+                            ]
+                        },
+                        "description": "Updates the profile of the logged-in user. Note: Body uses RegisterRequest DTO."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[User] Change My Password",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"currentPassword\": \"consumer123\",\n  \"newPassword\": \"newPassword456\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/users/change-password",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "users",
+                                "change-password"
+                            ]
+                        },
+                        "description": "Changes the password for the logged-in user."
+                    },
+                    "response": []
+                }
+            ],
+            "auth": {
+                "type": "bearer",
+                "bearer": [
+                    {
+                        "key": "token",
+                        "value": "{{accessToken}}",
+                        "type": "string"
+                    }
+                ]
+            },
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                            ""
+                        ]
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                            ""
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Admin API",
+            "description": "Endpoints restricted to ADMIN role.",
+            "item": [
+                {
+                    "name": "[Admin] Get All Users",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/admin/users",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "users"
+                            ]
+                        },
+                        "description": "Gets a list of all users."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[Admin] Get User Stats",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/admin/users/stats",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "users",
+                                "stats"
+                            ]
+                        },
+                        "description": "Gets statistics about users."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[Admin] Get Users by Role (DATA_PROVIDER)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/admin/users/role/DATA_PROVIDER",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "users",
+                                "role",
+                                "DATA_PROVIDER"
+                            ]
+                        },
+                        "description": "Gets all users with the role DATA_PROVIDER."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[Admin] Get Users by Status (ACTIVE)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/admin/users/status/ACTIVE",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "users",
+                                "status",
+                                "ACTIVE"
+                            ]
+                        },
+                        "description": "Gets all users with the status ACTIVE."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[Admin] Update User Status (Suspend User 2)",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/admin/users/2/status?status=SUSPENDED",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "users",
+                                "2",
+                                "status"
+                            ],
+                            "query": [
+                                {
+                                    "key": "status",
+                                    "value": "SUSPENDED"
+                                }
+                            ]
+                        },
+                        "description": "Updates the status of user with ID 2 to SUSPENDED. (Assumes ID 2 is provider@tesla.com)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[Admin] Update User Role (Change User 3 to ADMIN)",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/admin/users/3/role?role=ADMIN",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "users",
+                                "3",
+                                "role"
+                            ],
+                            "query": [
+                                {
+                                    "key": "role",
+                                    "value": "ADMIN"
+                                }
+                            ]
+                        },
+                        "description": "Updates the role of user with ID 3 to ADMIN. (Assumes ID 3 is consumer@startup.com)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[Admin] Suspend User (User 2)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/admin/users/2/suspend?reason=Violation",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "users",
+                                "2",
+                                "suspend"
+                            ],
+                            "query": [
+                                {
+                                    "key": "reason",
+                                    "value": "Violation"
+                                }
+                            ]
+                        },
+                        "description": "Suspends user with ID 2."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[Admin] Activate User (User 2)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/admin/users/2/activate",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "users",
+                                "2",
+                                "activate"
+                            ]
+                        },
+                        "description": "Activates user with ID 2."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[Admin] Delete User (User 3)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/admin/users/3",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "users",
+                                "3"
+                            ]
+                        },
+                        "description": "Deletes user with ID 3. (Assumes ID 3 is consumer@startup.com)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[Admin] Get Token Stats",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/admin/tokens/stats",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "tokens",
+                                "stats"
+                            ]
+                        },
+                        "description": "Gets statistics about refresh tokens."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "[Admin] Cleanup Expired Tokens",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/admin/tokens/cleanup",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "tokens",
+                                "cleanup"
+                            ]
+                        },
+                        "description": "Deletes expired and revoked refresh tokens from the database."
+                    },
+                    "response": []
+                }
+            ],
+            "auth": {
+                "type": "bearer",
+                "bearer": [
+                    {
+                        "key": "token",
+                        "value": "{{adminToken}}",
+                        "type": "string"
+                    }
+                ]
+            },
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                            ""
+                        ]
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                            ""
+                        ]
+                    }
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:8081/identity",
+            "type": "string",
+            "description": "Base URL of the Identity Service"
+        },
+        {
+            "key": "accessToken",
+            "value": "",
+            "type": "string",
+            "description": "Stores the JWT for regular user (DATA_CONSUMER)"
+        },
+        {
+            "key": "adminToken",
+            "value": "",
+            "type": "string",
+            "description": "Stores the JWT for ADMIN user"
+        },
+        {
+            "key": "refreshToken",
+            "value": "",
+            "type": "string",
+            "description": "Stores the refresh token from the last login"
+        }
+    ]
+}

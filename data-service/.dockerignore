@@ -1,0 +1,7 @@
+target/
+!target/data-service-1.0.0.jar
+.mvn/
+*.iml
+.idea/
+.git/
+.gitignore

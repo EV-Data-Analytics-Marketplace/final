@@ -1,0 +1,17 @@
+target/
+!target/analytics-service-1.0.0.jar
+.mvn/
+*.iml
+.idea/
+.vscode/
+.git/
+.gitignore
+README.md
+*.md
+docs/
+*.log
+logs/
+src/test/
+*.tmp
+*.bak
+.DS_Store
