@@ -1,0 +1,122 @@
+<mxfile host="app.diagrams.net" modified="2025-11-20T00:00:00Z" agent="github-copilot" version="20.5.3">
+  <diagram name="Login Sequence" id="diagram-login">
+    <mxGraphModel dx="1600" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="lifelineClient" value="Client" style="shape=umlLifeline;perimeter=rectanglePerimeter;whiteSpace=wrap;html=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="40" width="100" height="620" as="geometry"/>
+        </mxCell>
+        <mxCell id="lifelineAuthController" value="AuthController" style="shape=umlLifeline;perimeter=rectanglePerimeter;whiteSpace=wrap;html=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="240" y="40" width="110" height="620" as="geometry"/>
+        </mxCell>
+        <mxCell id="lifelineAuthService" value="AuthService" style="shape=umlLifeline;perimeter=rectanglePerimeter;whiteSpace=wrap;html=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="430" y="40" width="110" height="620" as="geometry"/>
+        </mxCell>
+        <mxCell id="lifelineAuthManager" value="AuthenticationManager" style="shape=umlLifeline;perimeter=rectanglePerimeter;whiteSpace=wrap;html=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="620" y="40" width="140" height="620" as="geometry"/>
+        </mxCell>
+        <mxCell id="lifelineUserRepo" value="UserRepository" style="shape=umlLifeline;perimeter=rectanglePerimeter;whiteSpace=wrap;html=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="830" y="40" width="120" height="620" as="geometry"/>
+        </mxCell>
+        <mxCell id="lifelineJwtUtil" value="JwtUtil" style="shape=umlLifeline;perimeter=rectanglePerimeter;whiteSpace=wrap;html=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="40" width="100" height="620" as="geometry"/>
+        </mxCell>
+        <mxCell id="lifelineRefreshRepo" value="RefreshTokenRepository" style="shape=umlLifeline;perimeter=rectanglePerimeter;whiteSpace=wrap;html=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="40" width="150" height="620" as="geometry"/>
+        </mxCell>
+        <mxCell id="msg1" value="POST /api/auth/login (LoginRequest)" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="lifelineClient" target="lifelineAuthController">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="120" as="sourcePoint"/>
+            <mxPoint x="0" y="120" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg2" value="login(request)" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="lifelineAuthController" target="lifelineAuthService">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="170" as="sourcePoint"/>
+            <mxPoint x="0" y="170" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg3" value="authenticate(UsernamePasswordAuthenticationToken)" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="lifelineAuthService" target="lifelineAuthManager">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="220" as="sourcePoint"/>
+            <mxPoint x="0" y="220" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg4" value="Authentication" style="endArrow=block;html=1;strokeWidth=2;dashed=1;" edge="1" parent="1" source="lifelineAuthManager" target="lifelineAuthService">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="260" as="sourcePoint"/>
+            <mxPoint x="0" y="260" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg5" value="findByEmail(email)" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="lifelineAuthService" target="lifelineUserRepo">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="310" as="sourcePoint"/>
+            <mxPoint x="0" y="310" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg6" value="User" style="endArrow=block;html=1;strokeWidth=2;dashed=1;" edge="1" parent="1" source="lifelineUserRepo" target="lifelineAuthService">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="350" as="sourcePoint"/>
+            <mxPoint x="0" y="350" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg7" value="save(updatedUser)" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="lifelineAuthService" target="lifelineUserRepo">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="390" as="sourcePoint"/>
+            <mxPoint x="0" y="390" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg8" value="generateAccessToken(user)" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="lifelineAuthService" target="lifelineJwtUtil">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="440" as="sourcePoint"/>
+            <mxPoint x="0" y="440" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg9" value="accessToken" style="endArrow=block;html=1;strokeWidth=2;dashed=1;" edge="1" parent="1" source="lifelineJwtUtil" target="lifelineAuthService">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="470" as="sourcePoint"/>
+            <mxPoint x="0" y="470" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg10" value="generateRefreshToken(user)" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="lifelineAuthService" target="lifelineJwtUtil">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="510" as="sourcePoint"/>
+            <mxPoint x="0" y="510" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg11" value="refreshToken" style="endArrow=block;html=1;strokeWidth=2;dashed=1;" edge="1" parent="1" source="lifelineJwtUtil" target="lifelineAuthService">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="540" as="sourcePoint"/>
+            <mxPoint x="0" y="540" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg12" value="save(RefreshToken)" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="lifelineAuthService" target="lifelineRefreshRepo">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="580" as="sourcePoint"/>
+            <mxPoint x="0" y="580" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg13" value="ack" style="endArrow=block;html=1;strokeWidth=2;dashed=1;" edge="1" parent="1" source="lifelineRefreshRepo" target="lifelineAuthService">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="610" as="sourcePoint"/>
+            <mxPoint x="0" y="610" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg14" value="AuthResponse" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="lifelineAuthService" target="lifelineAuthController">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="650" as="sourcePoint"/>
+            <mxPoint x="0" y="650" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg15" value="200 OK + AuthResponse" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="lifelineAuthController" target="lifelineClient">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="690" as="sourcePoint"/>
+            <mxPoint x="0" y="690" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
+

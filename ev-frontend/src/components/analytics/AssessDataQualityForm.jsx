@@ -74,6 +74,7 @@ const AssessDataQualityForm = ({ datasetId, onSuccess }) => {
         recommendations: formData.recommendations,
       };
 
+      console.log('Submitting assessment data:', JSON.stringify(assessmentData, null, 2));
       await assess(assessmentData);
       
       setFormData({
@@ -91,6 +92,18 @@ const AssessDataQualityForm = ({ datasetId, onSuccess }) => {
       alert('Data quality assessment submitted successfully!');
     } catch (err) {
       console.error('Failed to assess data quality:', err);
+      console.error('Error response:', err.response?.data);
+      
+      const errorData = err.response?.data;
+      let errorMsg = 'Unknown error';
+      
+      if (errorData?.error?.includes('No static resource')) {
+        errorMsg = 'This feature is not yet implemented on the backend.\n\nEndpoint: POST /analytics/api/data-quality/assess/{datasetId}\n\nThe backend needs to implement this endpoint to enable data quality assessment.';
+      } else {
+        errorMsg = errorData?.message || err.response?.statusText || err.message;
+      }
+      
+      alert(`Failed to assess data quality:\n\n${errorMsg}`);
     }
   };
 

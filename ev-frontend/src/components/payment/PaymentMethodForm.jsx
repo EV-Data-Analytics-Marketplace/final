@@ -10,11 +10,13 @@ const PaymentMethodForm = () => {
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
+    type: 'CREDIT_CARD',
     cardNumber: '',
     cardHolderName: '',
-    expiryMonth: '',
-    expiryYear: '',
-    cvv: '',
+    cardExpMonth: '',
+    cardExpYear: '',
+    cardCvv: '',
+    isDefault: false,
   });
 
   const handleChange = (e) => {
@@ -28,18 +30,30 @@ const PaymentMethodForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log('Submitting payment method:', formData);
       await add(formData);
       setFormData({
+        type: 'CREDIT_CARD',
         cardNumber: '',
         cardHolderName: '',
-        expiryMonth: '',
-        expiryYear: '',
-        cvv: '',
+        cardExpMonth: '',
+        cardExpYear: '',
+        cardCvv: '',
+        isDefault: false,
       });
       setShowAddForm(false);
       refetch();
+      alert('Payment method added successfully!');
     } catch (err) {
       console.error('Failed to add payment method:', err);
+      console.error('Error response:', JSON.stringify(err.response?.data, null, 2));
+      console.error('Error status:', err.response?.status);
+      
+      const errorMsg = err.response?.data?.errors 
+        ? Object.entries(err.response.data.errors).map(([field, msg]) => `${field}: ${msg}`).join(', ')
+        : err.response?.data?.message || err.message;
+      
+      alert('Failed to add payment method: ' + errorMsg);
     }
   };
 
@@ -92,6 +106,24 @@ const PaymentMethodForm = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Payment Method Type
+                  </label>
+                  <select
+                    name="type"
+                    value={formData.type}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="CREDIT_CARD">Credit Card</option>
+                    <option value="DEBIT_CARD">Debit Card</option>
+                    <option value="PAYPAL">PayPal</option>
+                    <option value="BANK_TRANSFER">Bank Transfer</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Card Number
                   </label>
                   <input
@@ -128,8 +160,8 @@ const PaymentMethodForm = () => {
                     </label>
                     <input
                       type="text"
-                      name="expiryMonth"
-                      value={formData.expiryMonth}
+                      name="cardExpMonth"
+                      value={formData.cardExpMonth}
                       onChange={handleChange}
                       placeholder="MM"
                       maxLength="2"
@@ -143,8 +175,8 @@ const PaymentMethodForm = () => {
                     </label>
                     <input
                       type="text"
-                      name="expiryYear"
-                      value={formData.expiryYear}
+                      name="cardExpYear"
+                      value={formData.cardExpYear}
                       onChange={handleChange}
                       placeholder="YYYY"
                       maxLength="4"
@@ -158,8 +190,8 @@ const PaymentMethodForm = () => {
                     </label>
                     <input
                       type="text"
-                      name="cvv"
-                      value={formData.cvv}
+                      name="cardCvv"
+                      value={formData.cardCvv}
                       onChange={handleChange}
                       placeholder="123"
                       maxLength="3"
@@ -167,6 +199,19 @@ const PaymentMethodForm = () => {
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      name="isDefault"
+                      checked={formData.isDefault}
+                      onChange={(e) => setFormData(prev => ({ ...prev, isDefault: e.target.checked }))}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">Set as default payment method</span>
+                  </label>
                 </div>
 
                 {error && (

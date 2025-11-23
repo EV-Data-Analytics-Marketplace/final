@@ -1,10 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMyAccesses, useAccessManagement } from '../../hooks/data/useAccess';
 
 const ConsumerPurchasesPage = () => {
   const { accesses, isLoading, error, refetch } = useMyAccesses();
-  const { revoke, isLoading: revoking } = useAccessManagement();
+  const { revoke } = useAccessManagement();
   const [revokingId, setRevokingId] = useState(null);
+
+  // Auto-refresh when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('Page became visible, refreshing accesses...');
+        refetch();
+      }
+    };
+
+    // Add event listener for visibility changes
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []); // Remove refetch from dependencies to avoid infinite loop
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -16,6 +33,9 @@ const ConsumerPurchasesPage = () => {
       minute: '2-digit',
     });
   };
+
+  // Filter out REVOKED accesses - only show ACTIVE and EXPIRED
+  const activeAccesses = accesses ? accesses.filter(access => access.status !== 'REVOKED') : [];
 
   const getStatusBadge = (status) => {
     const styles = {
@@ -96,7 +116,7 @@ const ConsumerPurchasesPage = () => {
         </button>
       </div>
 
-      {(!accesses || accesses.length === 0) ? (
+      {(!activeAccesses || activeAccesses.length === 0) ? (
         <div className="bg-white rounded-lg shadow p-12 text-center">
           <svg
             className="mx-auto h-12 w-12 text-gray-400 mb-4"
@@ -149,7 +169,7 @@ const ConsumerPurchasesPage = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {accesses.map((access) => (
+              {activeAccesses.map((access) => (
                 <tr key={access.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">

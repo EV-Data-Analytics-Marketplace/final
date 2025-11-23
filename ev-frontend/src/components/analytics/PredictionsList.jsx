@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { usePredictions, useCreatePrediction } from '../../hooks/analytics/usePredictions';
+import { usePredictions, usePrediction } from '../../hooks/analytics/usePredictions';
 
 /**
  * PredictionsList component - Manage AI predictions
  */
 const PredictionsList = () => {
   const { predictions, isLoading: loadingPredictions, error: predictionsError, refetch } = usePredictions();
-  const { create, isLoading: creating, error: createError } = useCreatePrediction();
+  const [selectedPredictionId, setSelectedPredictionId] = useState(null);
+  const { prediction: selectedPrediction, isLoading: loadingDetail } = usePrediction(selectedPredictionId, !!selectedPredictionId);
 
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -47,9 +48,19 @@ const PredictionsList = () => {
       });
       setShowCreateForm(false);
       refetch();
+      alert('Prediction created successfully!');
     } catch (err) {
       console.error('Failed to create prediction:', err);
+      alert('Failed to create prediction: ' + (err.response?.data?.message || err.message));
     }
+  };
+
+  const viewDetails = (predictionId) => {
+    setSelectedPredictionId(predictionId);
+  };
+
+  const closeDetails = () => {
+    setSelectedPredictionId(null);
   };
 
   const formatDate = (dateString) => {
@@ -220,6 +231,9 @@ const PredictionsList = () => {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Created
                       </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -243,6 +257,14 @@ const PredictionsList = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {formatDate(prediction.createdAt)}
                         </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <button
+                            onClick={() => viewDetails(prediction.id)}
+                            className="text-blue-600 hover:text-blue-900 font-medium"
+                          >
+                            View Details
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -251,6 +273,123 @@ const PredictionsList = () => {
             </div>
           )}
         </div>
+
+        {/* Prediction Detail Modal */}
+        {selectedPredictionId && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white">
+                <h3 className="text-xl font-bold text-gray-800">Prediction Details</h3>
+                <button
+                  onClick={closeDetails}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {loadingDetail ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                </div>
+              ) : selectedPrediction ? (
+                <div className="px-6 py-4 space-y-6">
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500">Prediction ID</label>
+                      <p className="mt-1 text-lg font-semibold text-gray-900">#{selectedPrediction.id}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500">Type</label>
+                      <p className="mt-1 text-lg font-semibold text-gray-900">
+                        {selectedPrediction.predictionType?.replace(/_/g, ' ')}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500">Dataset ID</label>
+                      <p className="mt-1 text-lg font-semibold text-gray-900">#{selectedPrediction.datasetId}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500">Status</label>
+                      <p className="mt-1">{getStatusBadge(selectedPrediction.status)}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500">Model Version</label>
+                      <p className="mt-1 text-lg font-semibold text-gray-900">{selectedPrediction.modelVersion || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500">Confidence</label>
+                      <p className="mt-1">
+                        {selectedPrediction.confidence ? (
+                          <>
+                            {getConfidenceBadge(selectedPrediction.confidence)}
+                            <span className="ml-2 text-gray-700">({(selectedPrediction.confidence * 100).toFixed(1)}%)</span>
+                          </>
+                        ) : 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Input Data */}
+                  {selectedPrediction.inputData && Object.keys(selectedPrediction.inputData).length > 0 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500 mb-2">Input Data</label>
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <pre className="text-sm text-gray-800 whitespace-pre-wrap">
+                          {JSON.stringify(selectedPrediction.inputData, null, 2)}
+                        </pre>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Prediction Result */}
+                  {selectedPrediction.predictionResult && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500 mb-2">Prediction Result</label>
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <pre className="text-sm text-blue-900 whitespace-pre-wrap">
+                          {typeof selectedPrediction.predictionResult === 'string' 
+                            ? selectedPrediction.predictionResult 
+                            : JSON.stringify(selectedPrediction.predictionResult, null, 2)}
+                        </pre>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Timestamps */}
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500">Created At</label>
+                      <p className="mt-1 text-sm text-gray-700">{formatDate(selectedPrediction.createdAt)}</p>
+                    </div>
+                    {selectedPrediction.completedAt && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-500">Completed At</label>
+                        <p className="mt-1 text-sm text-gray-700">{formatDate(selectedPrediction.completedAt)}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="px-6 py-12 text-center text-gray-500">
+                  <p>Prediction not found</p>
+                </div>
+              )}
+
+              <div className="px-6 py-4 border-t border-gray-200 flex justify-end sticky bottom-0 bg-white">
+                <button
+                  onClick={closeDetails}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

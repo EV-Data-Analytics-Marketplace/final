@@ -1,9 +1,7 @@
 import axios from 'axios';
 
 // Base URL from environment or default
-// When running in Docker with Nginx, use port 80 (default http)
-// Nginx will proxy to API Gateway internally
-const BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost';
+const BASE_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080';
 
 // Create axios instance
 const httpClient = axios.create({

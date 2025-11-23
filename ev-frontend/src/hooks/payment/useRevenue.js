@@ -104,10 +104,12 @@ export const useTotalEarnings = (autoFetch = true) => {
 
     try {
       const response = await getTotalEarnings();
+      console.log('Total Earnings API Response:', response.data);
       setEarnings(response.data);
       setIsLoading(false);
       return response.data;
     } catch (err) {
+      console.error('Failed to fetch total earnings:', err.response?.data || err);
       const errorMessage = err.response?.data?.message || 'Failed to fetch total earnings';
       setError({ message: errorMessage, details: err.response?.data });
       setIsLoading(false);

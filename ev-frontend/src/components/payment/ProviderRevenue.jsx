@@ -81,9 +81,14 @@ const ProviderRevenue = () => {
           ) : earningsError ? (
             <p className="text-red-600">{earningsError.message}</p>
           ) : (
-            <p className="text-4xl font-bold text-green-600">
-              {formatCurrency(earnings?.totalEarnings || 0)}
-            </p>
+            <div>
+              <p className="text-4xl font-bold text-green-600">
+                {formatCurrency(earnings?.totalEarnings ?? 0)}
+              </p>
+              {earnings?.currency && (
+                <p className="text-sm text-gray-500 mt-2">Currency: {earnings.currency}</p>
+              )}
+            </div>
           )}
         </div>
 

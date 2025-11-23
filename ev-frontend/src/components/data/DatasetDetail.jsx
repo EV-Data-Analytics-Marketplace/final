@@ -4,6 +4,7 @@ import { useAccessManagement, useMyAccesses } from '../../hooks/data/useAccess';
 import { useCreateTransaction } from '../../hooks/payment/useCreateTransaction';
 import { usePaymentMethods } from '../../hooks/payment/usePaymentMethods';
 import { useState, useEffect } from 'react';
+import React from 'react';
 
 /**
  * Dataset Detail Component
@@ -27,10 +28,17 @@ const DatasetDetail = ({ datasetId }) => {
     comment: '',
   });
 
-  // Check if user already has access to this dataset
-  const hasActiveAccess = accesses && accesses.length > 0 && accesses.some(
-    access => access.datasetId === parseInt(datasetId) && access.status === 'ACTIVE'
-  );
+  // Check if user already has access to this dataset (recalculate when accesses change)
+  const hasActiveAccess = React.useMemo(() => {
+    return accesses && accesses.length > 0 && accesses.some(
+      access => access.datasetId === parseInt(datasetId) && access.status === 'ACTIVE'
+    );
+  }, [accesses, datasetId]);
+
+  // Auto-refresh accesses when component mounts or datasetId changes
+  useEffect(() => {
+    refetchAccesses();
+  }, [datasetId]);
 
   // Load payment methods and set default when modal opens
   useEffect(() => {
@@ -42,15 +50,29 @@ const DatasetDetail = ({ datasetId }) => {
 
   const handlePurchase = async () => {
     try {
-      // Check if user already has access before creating transaction
-      if (hasActiveAccess) {
-        alert('You already have active access to this dataset');
-        setShowPurchaseModal(false);
+      if (!selectedPaymentMethod) {
+        alert('Please select a payment method');
         return;
       }
 
-      if (!selectedPaymentMethod) {
-        alert('Please select a payment method');
+      // Refresh accesses to get the latest data and check for existing access
+      console.log('Refreshing accesses before purchase...');
+      const latestAccesses = await refetchAccesses();
+      console.log('Latest accesses:', latestAccesses);
+      console.log('Current datasetId:', datasetId, 'Type:', typeof datasetId);
+      
+      const alreadyHasAccess = latestAccesses && latestAccesses.some(
+        access => {
+          console.log('Checking access:', access.datasetId, 'Type:', typeof access.datasetId, 'Status:', access.status);
+          return access.datasetId === parseInt(datasetId) && access.status === 'ACTIVE';
+        }
+      );
+      
+      console.log('Already has access?', alreadyHasAccess);
+      
+      if (alreadyHasAccess) {
+        alert('You already have active access to this dataset');
+        setShowPurchaseModal(false);
         return;
       }
 
@@ -71,28 +93,48 @@ const DatasetDetail = ({ datasetId }) => {
       
       await createTransaction(transactionData);
       
-      // Then grant access - only include relevant fields
-      const grantData = {
-        datasetId: dataset.id,
-        accessType,
-      };
-
-      // Only add these fields for API access type
-      if (accessType === 'API') {
-        grantData.durationDays = 30;
-        grantData.apiCallsLimit = 10000;
-      }
-
-      await grant(grantData);
+      // Refresh accesses - transaction might auto-grant access on backend
+      console.log('Transaction created, refreshing accesses...');
+      await refetchAccesses();
       
-      // Refresh accesses list
-      refetchAccesses();
+      // Check if access was auto-granted by transaction
+      const updatedAccesses = await refetchAccesses();
+      const accessGranted = updatedAccesses && updatedAccesses.some(
+        access => access.datasetId === parseInt(datasetId) && access.status === 'ACTIVE'
+      );
+      
+      console.log('Access auto-granted?', accessGranted);
+      
+      // Only manually grant access if transaction didn't auto-grant it
+      if (!accessGranted) {
+        console.log('Manually granting access...');
+        const grantData = {
+          datasetId: dataset.id,
+          accessType,
+          durationDays: accessType === 'API' ? 30 : null,
+          apiCallsLimit: accessType === 'API' ? 10000 : 0,
+        };
+
+        await grant(grantData);
+      } else {
+        console.log('Access was auto-granted by transaction, skipping manual grant');
+      }
+      
+      // Final refresh to ensure UI is up to date
+      await refetchAccesses();
       
       setShowPurchaseModal(false);
       alert('Purchase completed successfully!');
     } catch (err) {
       console.error('Purchase failed:', err);
-      console.error('Error details:', err.response?.data);
+      console.error('Error response status:', err.response?.status);
+      console.error('Error response data:', JSON.stringify(err.response?.data, null, 2));
+      console.error('Grant data sent:', JSON.stringify({
+        datasetId: dataset.id,
+        accessType,
+        durationDays: accessType === 'API' ? 30 : null,
+        apiCallsLimit: accessType === 'API' ? 10000 : 0,
+      }, null, 2));
       
       // Show user-friendly error message
       const errorMsg = err.response?.data?.error || err.response?.data?.message || err.message;

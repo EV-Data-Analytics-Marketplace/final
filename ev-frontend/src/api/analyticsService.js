@@ -158,6 +158,280 @@ export const deactivateInsight = (insightId) => {
   return httpClient.post(`${BASE_URL}/insights/${insightId}/deactivate`);
 };
 
+/**
+ * Get insights by severity level
+ * @param {string} severity - Severity level (HIGH, MEDIUM, LOW)
+ * @returns {Promise} API response
+ */
+export const getInsightsBySeverity = (severity) => {
+  return httpClient.get(`${BASE_URL}/insights/severity/${severity}`);
+};
+
+/**
+ * Get insights by category
+ * @param {string} category - Category (BATTERY, CHARGING, PERFORMANCE)
+ * @returns {Promise} API response
+ */
+export const getInsightsByCategory = (category) => {
+  return httpClient.get(`${BASE_URL}/insights/category/${category}`);
+};
+
+/**
+ * Get insights by type
+ * @param {string} type - Insight type
+ * @returns {Promise} API response
+ */
+export const getInsightsByType = (type) => {
+  return httpClient.get(`${BASE_URL}/insights/type/${type}`);
+};
+
+/**
+ * Get insight by ID
+ * @param {number} insightId - Insight ID
+ * @returns {Promise} API response
+ */
+export const getInsightById = (insightId) => {
+  return httpClient.get(`${BASE_URL}/insights/${insightId}`);
+};
+
+/**
+ * Get insights summary statistics
+ * @returns {Promise} API response
+ */
+export const getInsightsSummary = () => {
+  return httpClient.get(`${BASE_URL}/insights/summary`);
+};
+
+/**
+ * Create manual insight
+ * @param {Object} insightData - Insight data
+ * @returns {Promise} API response
+ */
+export const createInsight = (insightData) => {
+  return httpClient.post(`${BASE_URL}/insights/create`, insightData);
+};
+
+/**
+ * Generate insights from report
+ * @param {number} reportId - Report ID
+ * @returns {Promise} API response
+ */
+export const generateInsightsFromReport = (reportId) => {
+  return httpClient.post(`${BASE_URL}/insights/generate-auto/${reportId}`);
+};
+
+/**
+ * Activate insight
+ * @param {number} insightId - Insight ID
+ * @returns {Promise} API response
+ */
+export const activateInsight = (insightId) => {
+  return httpClient.post(`${BASE_URL}/insights/${insightId}/activate`);
+};
+
+/**
+ * Delete insight (Admin only)
+ * @param {number} insightId - Insight ID
+ * @returns {Promise} API response
+ */
+export const deleteInsight = (insightId) => {
+  return httpClient.delete(`${BASE_URL}/insights/${insightId}`);
+};
+
+// ========================================
+// Analytics Metrics API
+// ========================================
+
+/**
+ * Record single metric
+ * @param {Object} metricData - Metric data
+ * @returns {Promise} API response
+ */
+export const recordMetric = (metricData) => {
+  return httpClient.post(`${BASE_URL}/metrics/record`, metricData);
+};
+
+/**
+ * Record batch metrics
+ * @param {Array} metricsData - Array of metric data
+ * @returns {Promise} API response
+ */
+export const recordBatchMetrics = (metricsData) => {
+  return httpClient.post(`${BASE_URL}/metrics/batch-record`, metricsData);
+};
+
+/**
+ * Get metrics by entity
+ * @param {string} entityType - Entity type (VEHICLE, DATASET, etc.)
+ * @param {number} entityId - Entity ID
+ * @returns {Promise} API response
+ */
+export const getMetricsByEntity = (entityType, entityId) => {
+  return httpClient.get(`${BASE_URL}/metrics/entity/${entityType}/${entityId}`);
+};
+
+/**
+ * Get metrics by period
+ * @param {string} entityType - Entity type
+ * @param {number} entityId - Entity ID
+ * @param {string} startDate - Start date (ISO format)
+ * @param {string} endDate - End date (ISO format)
+ * @returns {Promise} API response
+ */
+export const getMetricsByPeriod = (entityType, entityId, startDate, endDate) => {
+  return httpClient.get(`${BASE_URL}/metrics/period/${entityType}/${entityId}`, {
+    params: { startDate, endDate },
+  });
+};
+
+/**
+ * Get average metric
+ * @param {string} entityType - Entity type
+ * @param {string} metricName - Metric name
+ * @param {string} startDate - Start date
+ * @param {string} endDate - End date
+ * @returns {Promise} API response
+ */
+export const getAverageMetric = (entityType, metricName, startDate, endDate) => {
+  return httpClient.get(`${BASE_URL}/metrics/average/${entityType}/${metricName}`, {
+    params: { startDate, endDate },
+  });
+};
+
+/**
+ * Get metrics summary
+ * @param {string} entityType - Entity type
+ * @param {number} entityId - Entity ID
+ * @param {string} startDate - Start date
+ * @param {string} endDate - End date
+ * @returns {Promise} API response
+ */
+export const getMetricsSummary = (entityType, entityId, startDate, endDate) => {
+  return httpClient.get(`${BASE_URL}/metrics/summary/${entityType}/${entityId}`, {
+    params: { startDate, endDate },
+  });
+};
+
+/**
+ * Get metrics by type
+ * @param {string} metricType - Metric type (PERFORMANCE, etc.)
+ * @returns {Promise} API response
+ */
+export const getMetricsByType = (metricType) => {
+  return httpClient.get(`${BASE_URL}/metrics/type/${metricType}`);
+};
+
+// ========================================
+// Advanced Analytics API
+// ========================================
+
+/**
+ * Export report as PDF
+ * @param {number} reportId - Report ID
+ * @returns {Promise} API response (file download)
+ */
+export const exportReportPDF = (reportId) => {
+  return httpClient.get(`${BASE_URL}/advanced/reports/${reportId}/export/pdf`, {
+    responseType: 'blob',
+  });
+};
+
+/**
+ * Export report as Excel
+ * @param {number} reportId - Report ID
+ * @returns {Promise} API response (file download)
+ */
+export const exportReportExcel = (reportId) => {
+  return httpClient.get(`${BASE_URL}/advanced/reports/${reportId}/export/excel`, {
+    responseType: 'blob',
+  });
+};
+
+/**
+ * Export report as CSV
+ * @param {number} reportId - Report ID
+ * @returns {Promise} API response (file download)
+ */
+export const exportReportCSV = (reportId) => {
+  return httpClient.get(`${BASE_URL}/advanced/reports/${reportId}/export/csv`, {
+    responseType: 'blob',
+  });
+};
+
+/**
+ * Compare multiple reports
+ * @param {Array<number>} reportIds - Array of report IDs
+ * @returns {Promise} API response
+ */
+export const compareReports = (reportIds) => {
+  return httpClient.post(`${BASE_URL}/advanced/reports/compare`, { reportIds });
+};
+
+/**
+ * Schedule analysis
+ * @param {Object} scheduleData - Schedule data
+ * @returns {Promise} API response
+ */
+export const scheduleAnalysis = (scheduleData) => {
+  return httpClient.post(`${BASE_URL}/advanced/schedule`, scheduleData);
+};
+
+/**
+ * Get my schedules
+ * @returns {Promise} API response
+ */
+export const getMySchedules = () => {
+  return httpClient.get(`${BASE_URL}/advanced/schedule/my-schedules`);
+};
+
+/**
+ * Update schedule
+ * @param {number} scheduleId - Schedule ID
+ * @param {Object} scheduleData - Schedule data
+ * @returns {Promise} API response
+ */
+export const updateSchedule = (scheduleId, scheduleData) => {
+  return httpClient.put(`${BASE_URL}/advanced/schedule/${scheduleId}`, scheduleData);
+};
+
+/**
+ * Toggle schedule (pause/resume)
+ * @param {number} scheduleId - Schedule ID
+ * @returns {Promise} API response
+ */
+export const toggleSchedule = (scheduleId) => {
+  return httpClient.patch(`${BASE_URL}/advanced/schedule/${scheduleId}/toggle`);
+};
+
+/**
+ * Delete schedule
+ * @param {number} scheduleId - Schedule ID
+ * @returns {Promise} API response
+ */
+export const deleteSchedule = (scheduleId) => {
+  return httpClient.delete(`${BASE_URL}/advanced/schedule/${scheduleId}`);
+};
+
+/**
+ * Get trending insights
+ * @param {number} days - Number of days to look back
+ * @returns {Promise} API response
+ */
+export const getTrendingInsights = (days = 7) => {
+  return httpClient.get(`${BASE_URL}/advanced/insights/trending`, {
+    params: { days },
+  });
+};
+
+/**
+ * Get performance benchmarks
+ * @param {number} datasetId - Dataset ID
+ * @returns {Promise} API response
+ */
+export const getPerformanceBenchmarks = (datasetId) => {
+  return httpClient.get(`${BASE_URL}/advanced/benchmarks/${datasetId}`);
+};
+
 // ========================================
 // Data Quality API
 // ========================================
@@ -169,7 +443,7 @@ export const deactivateInsight = (insightId) => {
  * @returns {Promise} API response
  */
 export const assessDataQuality = (datasetId, datasetMetrics) => {
-  return httpClient.post(`${BASE_URL}/quality/assess/${datasetId}`, datasetMetrics);
+  return httpClient.post(`${BASE_URL}/data-quality/assess/${datasetId}`, datasetMetrics);
 };
 
 /**
@@ -178,7 +452,7 @@ export const assessDataQuality = (datasetId, datasetMetrics) => {
  * @returns {Promise} API response
  */
 export const getLatestQuality = (datasetId) => {
-  return httpClient.get(`${BASE_URL}/quality/dataset/${datasetId}/latest`);
+  return httpClient.get(`${BASE_URL}/data-quality/dataset/${datasetId}/latest`);
 };
 
 /**
@@ -187,7 +461,7 @@ export const getLatestQuality = (datasetId) => {
  * @returns {Promise} API response
  */
 export const getLowQualityDatasets = (threshold = 80.0) => {
-  return httpClient.get(`${BASE_URL}/quality/low-quality`, {
+  return httpClient.get(`${BASE_URL}/data-quality/low-quality`, {
     params: { threshold },
   });
 };
@@ -224,7 +498,36 @@ export default {
   // Insights
   getActiveInsights,
   getInsightsByDataset,
+  getInsightsBySeverity,
+  getInsightsByCategory,
+  getInsightsByType,
+  getInsightById,
+  getInsightsSummary,
+  createInsight,
+  generateInsightsFromReport,
   deactivateInsight,
+  activateInsight,
+  deleteInsight,
+  // Metrics
+  recordMetric,
+  recordBatchMetrics,
+  getMetricsByEntity,
+  getMetricsByPeriod,
+  getAverageMetric,
+  getMetricsSummary,
+  getMetricsByType,
+  // Advanced Analytics
+  exportReportPDF,
+  exportReportExcel,
+  exportReportCSV,
+  compareReports,
+  scheduleAnalysis,
+  getMySchedules,
+  updateSchedule,
+  toggleSchedule,
+  deleteSchedule,
+  getTrendingInsights,
+  getPerformanceBenchmarks,
   // Quality
   assessDataQuality,
   getLatestQuality,
