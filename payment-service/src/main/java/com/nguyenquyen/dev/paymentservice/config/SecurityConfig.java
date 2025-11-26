@@ -24,8 +24,10 @@ import java.util.Arrays;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
     @Value("${jwt.secret}")
     private String jwtSecret;
+
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         // Bộ chuyển đổi này sẽ lấy các quyền (authorities) từ JWT
@@ -52,6 +54,8 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/actuator/**").permitAll() // for monitoring & Eureka
+                        .requestMatchers("/api/health/**").permitAll() // for testing
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )

@@ -17,6 +17,15 @@ eureka:
     enable-self-preservation: false
     eviction-interval-timer-in-ms: 10000
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
 logging:
   level:
     com.netflix.eureka: OFF

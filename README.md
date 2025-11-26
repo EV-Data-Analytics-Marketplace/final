@@ -1,298 +1,249 @@
-# 🎯 EV Platform - QUICK START
+# EV Project - Microservices Platform
 
-## 📦 Dành Cho Người Mới - Hướng Dẫn Cài Đặt
+Electric Vehicle Data Management & Analytics Platform with Microservices Architecture.
 
-**Bạn là người mới nhận project này?** Đọc hướng dẫn sau:
+## 🚀 Quick Start - Docker Deployment
 
-### 🚀 Quick Start (5 phút)
-👉 **[QUICK-START.md](QUICK-START.md)** - Bắt đầu nhanh
+### Prerequisites
+- Docker Desktop 20.10+
+- Docker Compose 2.x+
+- Java 17+ (for building)
+- 8GB RAM minimum
 
-### 📖 Hướng Dẫn Chi Tiết (Khuyến nghị)
-👉 **[INSTALLATION-GUIDE.md](INSTALLATION-GUIDE.md)** - Hướng dẫn đầy đủ từ A-Z
+### Deploy in 3 Steps
 
-### 📄 Plain Text Guide
-👉 **[README.txt](README.txt)** - Hướng dẫn text đơn giản
+#### Option 1: Using Automated Script (Recommended)
 
----
-
-## ⚡ Bạn Gặp Vấn Đề Login? → Đã Fix Rồi!
-
-**Đọc ngay**: [`START-HERE.md`](START-HERE.md)
-
-Vấn đề 401 Unauthorized đã được khắc phục. Frontend đã được rebuild với API paths đúng.
-
-## 🚀 Deploy Ngay (3 Bước)
-
-### Bước 1: Verify Login Fix
-```cmd
-verify-login-fix.bat
+**Windows:**
+```powershell
+.\deploy.ps1
 ```
 
-### Bước 2: Nếu cần deploy lại toàn bộ
-```cmd
-quick-deploy.bat
+**Linux/Mac:**
+```bash
+chmod +x deploy.sh
+./deploy.sh
 ```
 
-### Bước 3: Mở browser
-```
-http://localhost
-```
-Login với:
-- Email: `admin@evdata.com`
-- Password: `password`
+#### Option 2: Manual Deployment
 
-## 📖 Tài Liệu Đầy Đủ
+**Step 1: Build JAR files**
+```bash
+# Windows PowerShell
+cd eureka-server; .\mvnw.cmd clean package -DskipTests; cd ..
+cd api-gateway; .\mvnw.cmd clean package -DskipTests; cd ..
+cd identity-service; .\mvnw.cmd clean package -DskipTests; cd ..
+cd data-service; .\mvnw.cmd clean package -DskipTests; cd ..
+cd payment-service; .\mvnw.cmd clean package -DskipTests; cd ..
+cd analytics-service; .\mvnw.cmd clean package -DskipTests; cd ..
 
-| File | Mô Tả | Khi Nào Đọc |
-|------|-------|-------------|
-| **[START-HERE.md](START-HERE.md)** | 🔥 Bắt đầu từ đây! | Ngay bây giờ |
-| **[LOGIN-FIX-SUMMARY.md](LOGIN-FIX-SUMMARY.md)** | Chi tiết về login fix | Khi muốn hiểu fix |
-| **[DEPLOYMENT-GUIDE.md](DEPLOYMENT-GUIDE.md)** | Hướng dẫn deploy chi tiết | Khi cần troubleshoot |
-| **[README-DEPLOY.md](README-DEPLOY.md)** | Quick deployment guide | Khi deploy lại |
-
-## 🎮 Menu Quản Lý
-
-Chạy menu tổng hợp (recommended):
-```cmd
-menu.bat
+# Linux/Mac
+for service in eureka-server api-gateway identity-service data-service payment-service analytics-service; do
+    cd $service && ./mvnw clean package -DskipTests && cd ..
+done
 ```
 
-Menu có các options:
-1. Quick Deploy
-2. Rebuild All
-3. Check Status
-4. Test Deployment
-5. Test Login
-6. View Eureka
-7. View Frontend
-8. View Logs
-9. Stop All
-
-## 🛠️ Scripts Quan Trọng
-
-### ⭐ Recommended
-```cmd
-verify-login-fix.bat    # Verify login đã fix
-menu.bat                # Menu tổng hợp
-check-status.ps1        # Check chi tiết status
+**Step 2: Deploy to Docker**
+```bash
+docker compose up -d --build
 ```
 
-### Deploy & Build
-```cmd
-quick-deploy.bat        # Deploy nhanh
-rebuild-all.bat         # Rebuild từ đầu
+**Step 3: Verify Deployment**
+```bash
+docker compose ps
 ```
 
-### Testing
-```cmd
-test-login.bat          # Test login API
-test-deployment.bat     # Test tất cả services
-```
+## 📊 Access Services
 
-### Management
-```cmd
-status.bat              # Xem status
-stop-all.bat            # Dừng tất cả
-```
-
-## 🌐 Access URLs
-
-| Service | URL | Mô Tả |
-|---------|-----|-------|
-| **Frontend** | http://localhost | React app (Nginx) |
-| **API Gateway** | http://localhost:8080 | REST API Gateway |
-| **Eureka** | http://localhost:8761 | Service Discovery |
-| **Identity Service** | http://localhost:8081 | Authentication |
-| **Data Service** | http://localhost:8082 | Dataset Management |
-| **Payment Service** | http://localhost:8083 | Transactions |
+| Service | URL | Description |
+|---------|-----|-------------|
+| **Frontend** | http://localhost | React Web Application |
+| **Eureka Dashboard** | http://localhost:8761 | Service Registry |
+| **API Gateway** | http://localhost:8080 | API Gateway |
+| **Identity Service** | http://localhost:8081 | Auth & Users |
+| **Data Service** | http://localhost:8082 | Data Management |
+| **Payment Service** | http://localhost:8083 | Payments |
 | **Analytics Service** | http://localhost:8084 | Analytics |
 
-## 👥 Test Users
+## 🗄️ Database Access
 
-### Admin
-- Email: `admin@evdata.com`
-- Password: `password` ← **Updated for testing**
-- Access: Toàn bộ hệ thống
+| Database | Port | Credentials |
+|----------|------|-------------|
+| Identity DB | 3307 | root/root123 |
+| Data DB | 3308 | root/root123 |
+| Payment DB | 3309 | root/root123 |
+| Analytics DB | 3310 | root/root123 |
 
-### Data Provider
-- Email: `provider@evstation.com`
-- Password: `provider123`
-- Access: Upload datasets, manage listings
+## 📚 Documentation
 
-### Data Consumer
-- Email: `consumer@startup.com`
-- Password: `consumer123`
-- Access: Browse, purchase datasets
+- **[Complete Docker Deployment Guide](DOCKER_DEPLOYMENT_GUIDE.md)** - Detailed deployment instructions
+- **[API Documentation](docs/API.md)** - API endpoints and usage
+- **[Architecture Overview](docs/ARCHITECTURE.md)** - System architecture
 
-## 🔧 Troubleshooting
+## 🛠️ Useful Commands
 
-### Login không được?
-1. Chạy `verify-login-fix.bat`
-2. Check browser console (F12)
-3. Xem `LOGIN-FIX-SUMMARY.md`
+```bash
+# View all logs
+docker compose logs -f
 
-### Services không start?
-1. Check Docker đang chạy
-2. Chạy `check-status.ps1`
-3. Xem logs: `docker logs ev-identity-service`
-4. Deploy lại: `quick-deploy.bat`
+# View specific service logs
+docker compose logs -f identity-service
 
-### Frontend không load?
-1. Check container: `docker logs ev-frontend`
-2. Rebuild: `docker-compose build --no-cache ev-frontend`
-3. Restart: `docker-compose up -d ev-frontend`
+# Check service status
+docker compose ps
 
-## 📊 Architecture
+# Restart a service
+docker compose restart identity-service
 
-```
-Browser (http://localhost)
-    ↓
-Nginx (Frontend Container:80)
-    ↓ proxy
-API Gateway (8080)
-    ↓ routes via Eureka
-┌────────────────┬─────────────┬─────────────┬──────────────┐
-│  Identity      │    Data     │   Payment   │  Analytics   │
-│  Service:8081  │ Service:8082│Service:8083 │Service:8084  │
-└────────────────┴─────────────┴─────────────┴──────────────┘
-         ↓              ↓              ↓              ↓
-    MySQL:3307    MySQL:3308    MySQL:3309    MySQL:3310
+# Stop all services
+docker compose down
+
+# Stop and remove volumes (reset databases)
+docker compose down -v
+
+# View resource usage
+docker stats
 ```
 
-## 🎯 Key Features
+## 🔧 Script Options
 
-- ✅ Microservices Architecture
-- ✅ Service Discovery (Eureka)
-- ✅ API Gateway (Spring Cloud Gateway)
-- ✅ JWT Authentication
-- ✅ Role-Based Access Control (RBAC)
-- ✅ React Frontend with Nginx
-- ✅ MySQL Databases
-- ✅ Docker Containerization
-- ✅ RESTful APIs
+### Deploy Script Flags
 
-## 💡 Important Notes
-
-### 1. Nginx Proxy
-Frontend sử dụng Nginx để proxy API requests:
-- Browser request: `http://localhost/identity/auth/login`
-- Nginx proxy to: `http://api-gateway:8080/identity/auth/login`
-- **KHÔNG** cần truy cập trực tiếp port 8080 từ browser
-
-### 2. Service Discovery
-Tất cả services register với Eureka:
-- Check http://localhost:8761
-- Tất cả phải có status "UP"
-
-### 3. API Paths (FIXED!)
-- ✅ Correct: `/identity/auth/login`
-- ❌ Wrong: `/identity/api/auth/login`
-
-### 4. Environment
-File `.env` của frontend:
-```
-VITE_API_GATEWAY_URL=http://localhost
+**Windows (deploy.ps1):**
+```powershell
+.\deploy.ps1                # Normal deployment
+.\deploy.ps1 -SkipBuild     # Skip JAR build, use existing
+.\deploy.ps1 -Clean         # Clean deployment (remove volumes)
+.\deploy.ps1 -Help          # Show help
 ```
 
-## 📦 What's Included
+**Linux/Mac (deploy.sh):**
+```bash
+./deploy.sh                 # Normal deployment
+./deploy.sh --skip-build    # Skip JAR build, use existing
+./deploy.sh --clean         # Clean deployment (remove volumes)
+./deploy.sh --help          # Show help
+```
+
+## 🏗️ Architecture
+
+```
+┌─────────────────┐
+│   Frontend      │
+│   (React)       │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  API Gateway    │
+│  (Port 8080)    │
+└────────┬────────┘
+         │
+    ┌────┴────┬─────────┬──────────┐
+    ▼         ▼         ▼          ▼
+┌────────┐ ┌──────┐ ┌────────┐ ┌─────────┐
+│Identity│ │ Data │ │Payment │ │Analytics│
+│Service │ │Service│ │Service │ │ Service │
+└───┬────┘ └──┬───┘ └───┬────┘ └────┬────┘
+    │         │         │           │
+    ▼         ▼         ▼           ▼
+┌────────┐ ┌──────┐ ┌────────┐ ┌─────────┐
+│MySQL   │ │MySQL │ │MySQL   │ │ MySQL   │
+│3307    │ │3308  │ │3309    │ │ 3310    │
+└────────┘ └──────┘ └────────┘ └─────────┘
+```
+
+All services register with **Eureka Server** (8761) for service discovery.
+
+## ⚡ Performance Tips
+
+1. **Use Pre-built JARs**: Build JARs locally first, then deploy to Docker (5-10x faster)
+2. **Increase Docker Resources**: Settings → Resources → Increase memory to 8GB+
+3. **Enable BuildKit**: `export DOCKER_BUILDKIT=1`
+4. **Use SSD**: Store Docker data on SSD for better performance
+
+## 🐛 Troubleshooting
+
+### Services not starting?
+```bash
+# Check logs
+docker compose logs
+
+# Check specific service
+docker logs ev-identity-service
+```
+
+### Port conflicts?
+```bash
+# Windows - Check port usage
+netstat -ano | findstr :8080
+
+# Linux/Mac
+lsof -i :8080
+```
+
+### Out of disk space?
+```bash
+# Clean Docker system
+docker system prune -a --volumes
+```
+
+### Database connection issues?
+```bash
+# Check database health
+docker compose ps
+
+# Wait for databases to be healthy
+# MySQL needs ~30 seconds to initialize
+```
+
+See [DOCKER_DEPLOYMENT_GUIDE.md](DOCKER_DEPLOYMENT_GUIDE.md) for detailed troubleshooting.
+
+## 📦 Project Structure
 
 ```
 EV/
-├── START-HERE.md              ← 🔥 READ THIS FIRST
-├── LOGIN-FIX-SUMMARY.md       ← Login fix details
-├── DEPLOYMENT-GUIDE.md        ← Full deployment guide
-├── README-DEPLOY.md           ← Quick deploy guide
-├── menu.bat                   ← ⭐ Main menu
-├── verify-login-fix.bat       ← ⭐ Verify login
-├── quick-deploy.bat           ← Quick deploy
-├── rebuild-all.bat            ← Rebuild all
-├── check-status.ps1           ← ⭐ Status check
-├── test-login.bat             ← Test login API
-├── test-deployment.bat        ← Test deployment
-├── status.bat                 ← Quick status
-├── stop-all.bat               ← Stop all
-├── docker-compose.yml         ← Docker config
-├── eureka-server/             ← Service Discovery
-├── api-gateway/               ← API Gateway
-├── identity-service/          ← Authentication
-├── data-service/              ← Dataset Management
-├── payment-service/           ← Transactions
-├── analytics-service/         ← Analytics
-└── ev-frontend/               ← React Frontend
+├── eureka-server/          # Service Discovery
+├── api-gateway/            # API Gateway
+├── identity-service/       # Authentication & Authorization
+├── data-service/           # Data Management
+├── payment-service/        # Payment Processing
+├── analytics-service/      # Analytics & Reporting
+├── ev-frontend/            # React Frontend
+├── docker-compose.yml      # Docker Compose Configuration
+├── deploy.ps1              # Windows Deployment Script
+├── deploy.sh               # Linux/Mac Deployment Script
+└── DOCKER_DEPLOYMENT_GUIDE.md  # Detailed Guide
 ```
 
-## 🚦 Status Check
+## 🔐 Security Notes
 
-Run this to check everything:
-```cmd
-check-status.ps1
-```
+**⚠️ Default credentials are for DEVELOPMENT only!**
 
-Or quick check:
-```cmd
-docker ps -a | findstr "ev-"
-```
+For production:
+- Change all database passwords
+- Use secrets management
+- Enable SSL/TLS
+- Configure firewall rules
+- Use environment-specific configurations
 
-## 🎓 Learning Resources
+## 📝 License
 
-1. **Understand the fix**: `LOGIN-FIX-SUMMARY.md`
-2. **Deploy from scratch**: `DEPLOYMENT-GUIDE.md`
-3. **Quick operations**: `README-DEPLOY.md`
-4. **Verify everything works**: `verify-login-fix.bat`
+[Your License Here]
 
-## ✨ Recent Fixes
+## 👥 Contributors
 
-- ✅ Fixed API base URLs in all frontend services
-- ✅ Removed incorrect `/api` prefix from paths
-- ✅ Rebuilt frontend with correct configuration
-- ✅ Created comprehensive testing and deployment scripts
-- ✅ Added detailed documentation
+[Your Team/Contributors Here]
 
-## 🎉 Ready to Start?
+## 📧 Support
 
-### Option 1: Verify Fix (Fastest)
-```cmd
-verify-login-fix.bat
-```
-
-### Option 2: Full Deploy
-```cmd
-quick-deploy.bat
-```
-
-### Option 3: Use Menu
-```cmd
-menu.bat
-```
+For issues and questions:
+- Check [DOCKER_DEPLOYMENT_GUIDE.md](DOCKER_DEPLOYMENT_GUIDE.md)
+- Create an issue on GitHub
+- Contact the development team
 
 ---
 
-## ⚡ TL;DR (Too Long; Didn't Read)
-
-```cmd
-# 1. Verify fix
-verify-login-fix.bat
-
-# 2. Open browser
-start http://localhost
-
-# 3. Hard reload (important!)
-Press Ctrl+Shift+R
-
-# 4. Login
-Email: admin@evdata.com
-Password: password
-```
-
-**Should see HTTP 200, not 401!** ✅
-
----
-
-**Need Help?** 
-- Check `START-HERE.md`
-- Run `menu.bat` for interactive options
-- View logs: `docker logs [service-name]`
-- Check Eureka: http://localhost:8761
-
-**Happy Coding! 🚀**
+**Last Updated:** November 26, 2025  
+**Version:** 1.0.0
 
