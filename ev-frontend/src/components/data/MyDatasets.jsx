@@ -6,8 +6,9 @@ import { useCategories } from '../../hooks/data/useCategories';
 /**
  * My Datasets Component
  * Shows provider's own datasets with create/edit/delete options
+ * @param {boolean} hideCreate - Hide create dataset button (for admin view)
  */
-const MyDatasets = () => {
+const MyDatasets = ({ hideCreate = false }) => {
   const { datasets, isLoading, refetch } = useMyDatasets();
   const { create, update, publish, delete: deleteDataset } = useDatasetManagement();
   const { categories } = useCategories(true);
@@ -159,12 +160,14 @@ const MyDatasets = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">My Datasets</h1>
-          <button
-            onClick={handleCreate}
-            className="px-4 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700"
-          >
-            Create Dataset
-          </button>
+          {!hideCreate && (
+            <button
+              onClick={handleCreate}
+              className="px-4 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700"
+            >
+              Create Dataset
+            </button>
+          )}
         </div>
 
         <div className="bg-white shadow rounded-lg overflow-hidden">

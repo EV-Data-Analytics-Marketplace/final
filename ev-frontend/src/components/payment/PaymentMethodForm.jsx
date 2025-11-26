@@ -79,9 +79,10 @@ const PaymentMethodForm = () => {
 
   const formatCardNumber = (cardNumber) => {
     if (!cardNumber || typeof cardNumber !== 'string') {
-      return '**** **** **** ****';
+      return 'N/A';
     }
-    return `**** **** **** ${cardNumber.slice(-4)}`;
+    // Show full card number without masking
+    return cardNumber;
   };
 
   return (

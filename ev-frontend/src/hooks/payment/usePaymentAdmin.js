@@ -6,6 +6,8 @@ import {
   getAllProviderRevenues,
   calculateMonthlyRevenue,
   payProviderRevenue,
+  approveRefund,
+  rejectRefund,
 } from '../../api/paymentService';
 
 /**
@@ -223,16 +225,63 @@ export const usePaymentAdminOperations = () => {
     }
   };
 
+  /**
+   * Approve refund
+   * @param {number} refundId - Refund ID
+   */
+  const approve = async (refundId) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await approveRefund(refundId);
+      setIsLoading(false);
+      return response.data;
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Failed to approve refund';
+      setError({ message: errorMessage, details: err.response?.data });
+      setIsLoading(false);
+      throw err;
+    }
+  };
+
+  /**
+   * Reject refund
+   * @param {number} refundId - Refund ID
+   * @param {string} reason - Rejection reason
+   */
+  const reject = async (refundId, reason) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await rejectRefund(refundId, reason);
+      setIsLoading(false);
+      return response.data;
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Failed to reject refund';
+      setError({ message: errorMessage, details: err.response?.data });
+      setIsLoading(false);
+      throw err;
+    }
+  };
+
   return {
     calculateRevenue,
     payRevenue,
+    approveRefund: approve,
+    rejectRefund: reject,
     isLoading,
     error,
   };
 };
 
+// Export alias for compatibility
+export const usePaymentAdminStats = usePaymentStats;
+
 export default {
   usePaymentStats,
+  usePaymentAdminStats,
   useAllTransactions,
   useAllRefunds,
   useAllProviderRevenues,

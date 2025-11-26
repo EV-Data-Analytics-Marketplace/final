@@ -1,16 +1,66 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useMyAccesses } from '../../hooks/data/useAccess';
+import { useTransactions } from '../../hooks/payment/useTransactions';
+import { useSearchDatasets } from '../../hooks/data/useSearchDatasets';
 
 const ConsumerDashboardPage = () => {
   const { user } = useAuth();
+  const { accesses, isLoading: accessesLoading } = useMyAccesses();
+  const { transactions, isLoading: transactionsLoading } = useTransactions('consumer');
+  const { datasets: recommendedDatasets, isLoading: datasetsLoading } = useSearchDatasets({
+    pricingModel: null,
+    page: 0,
+    size: 3,
+  });
 
-  const stats = [
-    { title: 'Purchased Datasets', value: '8', icon: '💾', color: 'bg-blue-500' },
-    { title: 'Total Spent', value: '$2,350', icon: '💳', color: 'bg-green-500' },
-    { title: 'Downloads', value: '24', icon: '⬇️', color: 'bg-purple-500' },
-    { title: 'Reports Created', value: '15', icon: '📊', color: 'bg-yellow-500' },
-  ];
+  // Helper functions - must be defined before useMemo
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''} ago`;
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount || 0);
+  };
+
+  // Calculate stats from real data
+  const stats = useMemo(() => {
+    const purchasedCount = accesses?.length || 0;
+    const totalSpent = transactions?.reduce((sum, t) => {
+      if (t.transactionType === 'PURCHASE' && t.status === 'COMPLETED') {
+        return sum + (t.amount || 0);
+      }
+      return sum;
+    }, 0) || 0;
+    
+    const totalDownloads = accesses?.reduce((sum, access) => {
+      return sum + (access.downloadCount || 0);
+    }, 0) || 0;
+
+    const completedTransactions = transactions?.filter(
+      t => t.status === 'COMPLETED'
+    ).length || 0;
+
+    return [
+      { title: 'Purchased Datasets', value: purchasedCount, icon: '💾', color: 'bg-blue-500' },
+      { title: 'Total Spent', value: `$${totalSpent.toFixed(2)}`, icon: '💳', color: 'bg-green-500' },
+      { title: 'Downloads', value: totalDownloads, icon: '⬇️', color: 'bg-purple-500' },
+      { title: 'Transactions', value: completedTransactions, icon: '📊', color: 'bg-yellow-500' },
+    ];
+  }, [accesses, transactions]);
 
   const quickActions = [
     { title: 'Browse Datasets', path: '/consumer/browse', icon: '🔍' },
@@ -18,6 +68,23 @@ const ConsumerDashboardPage = () => {
     { title: 'Transactions', path: '/consumer/transactions', icon: '💳' },
     { title: 'Analytics', path: '/consumer/analytics', icon: '📊' },
   ];
+
+  // Get recent purchases from transactions
+  const recentPurchases = useMemo(() => {
+    if (!transactions) return [];
+    return transactions
+      .filter(t => t.transactionType === 'PURCHASE' && t.status === 'COMPLETED')
+      .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate))
+      .slice(0, 3)
+      .map(t => ({
+        id: t.id,
+        name: `Dataset #${t.datasetId}`,
+        price: `$${t.amount.toFixed(2)}`,
+        date: formatDate(t.transactionDate),
+      }));
+  }, [transactions]);
+
+  const isLoading = accessesLoading || transactionsLoading || datasetsLoading;
 
   return (
     <div className="space-y-6">
@@ -38,7 +105,11 @@ const ConsumerDashboardPage = () => {
               </div>
             </div>
             <h3 className="text-gray-500 text-sm font-medium">{stat.title}</h3>
-            <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
+            {isLoading ? (
+              <div className="mt-2 h-8 bg-gray-200 animate-pulse rounded"></div>
+            ) : (
+              <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
+            )}
           </div>
         ))}
       </div>
@@ -68,44 +139,68 @@ const ConsumerDashboardPage = () => {
             View All →
           </Link>
         </div>
-        <div className="space-y-3">
-          {[
-            { name: 'EV Battery Performance Data', price: '$299', date: '2 days ago' },
-            { name: 'Charging Station Usage', price: '$199', date: '5 days ago' },
-            { name: 'Range Analysis Dataset', price: '$349', date: '1 week ago' },
-          ].map((purchase, index) => (
-            <div key={index} className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0">
-              <div>
-                <h3 className="font-medium text-gray-900">{purchase.name}</h3>
-                <p className="text-sm text-gray-500">{purchase.date}</p>
+        {transactionsLoading ? (
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-16 bg-gray-200 animate-pulse rounded"></div>
+            ))}
+          </div>
+        ) : recentPurchases.length > 0 ? (
+          <div className="space-y-3">
+            {recentPurchases.map((purchase) => (
+              <div key={purchase.id} className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0">
+                <div>
+                  <h3 className="font-medium text-gray-900">{purchase.name}</h3>
+                  <p className="text-sm text-gray-500">{purchase.date}</p>
+                </div>
+                <span className="text-green-600 font-semibold">{purchase.price}</span>
               </div>
-              <span className="text-green-600 font-semibold">{purchase.price}</span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <p>No purchases yet</p>
+            <Link to="/consumer/browse" className="text-blue-600 hover:text-blue-700 mt-2 inline-block">
+              Browse Datasets →
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Recommended Datasets */}
       <div className="bg-white rounded-lg shadow p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Recommended for You</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            { name: 'Predictive Maintenance Data', category: 'Maintenance', price: '$249' },
-            { name: 'Energy Consumption Patterns', category: 'Energy', price: '$179' },
-            { name: 'Driving Behavior Analysis', category: 'Behavior', price: '$299' },
-          ].map((dataset, index) => (
-            <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-              <h3 className="font-semibold text-gray-900 mb-2">{dataset.name}</h3>
-              <p className="text-sm text-gray-500 mb-3">{dataset.category}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-green-600 font-bold">{dataset.price}</span>
-                <button className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
-                  View
-                </button>
+        {datasetsLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-32 bg-gray-200 animate-pulse rounded"></div>
+            ))}
+          </div>
+        ) : recommendedDatasets?.content?.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {recommendedDatasets.content.map((dataset) => (
+              <div key={dataset.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <h3 className="font-semibold text-gray-900 mb-2 truncate">{dataset.name}</h3>
+                <p className="text-sm text-gray-500 mb-3">{dataset.categoryId ? `Category ${dataset.categoryId}` : 'Uncategorized'}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-green-600 font-bold">
+                    {dataset.pricingModel === 'FREE' ? 'FREE' : formatCurrency(dataset.price)}
+                  </span>
+                  <Link
+                    to={`/consumer/dataset/${dataset.id}`}
+                    className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                  >
+                    View
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <p>No datasets available</p>
+          </div>
+        )}
       </div>
     </div>
   );

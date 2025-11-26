@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { usePredictions, usePrediction } from '../../hooks/analytics/usePredictions';
+import CreatePredictionForm from './CreatePredictionForm';
 
 /**
  * PredictionsList component - Manage AI predictions
@@ -7,53 +8,8 @@ import { usePredictions, usePrediction } from '../../hooks/analytics/usePredicti
 const PredictionsList = () => {
   const { predictions, isLoading: loadingPredictions, error: predictionsError, refetch } = usePredictions();
   const [selectedPredictionId, setSelectedPredictionId] = useState(null);
-  const { prediction: selectedPrediction, isLoading: loadingDetail } = usePrediction(selectedPredictionId, !!selectedPredictionId);
-
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [formData, setFormData] = useState({
-    predictionType: 'BATTERY_DEGRADATION',
-    datasetId: '',
-    inputData: {},
-    modelVersion: 'v1.0',
-  });
-
-  const predictionTypes = [
-    'BATTERY_DEGRADATION',
-    'RANGE_ESTIMATION',
-    'CHARGING_TIME',
-    'ENERGY_CONSUMPTION',
-    'MAINTENANCE_PREDICTION',
-  ];
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await create({
-        ...formData,
-        datasetId: parseInt(formData.datasetId),
-      });
-      setFormData({
-        predictionType: 'BATTERY_DEGRADATION',
-        datasetId: '',
-        inputData: {},
-        modelVersion: 'v1.0',
-      });
-      setShowCreateForm(false);
-      refetch();
-      alert('Prediction created successfully!');
-    } catch (err) {
-      console.error('Failed to create prediction:', err);
-      alert('Failed to create prediction: ' + (err.response?.data?.message || err.message));
-    }
-  };
+  const { prediction: selectedPrediction, isLoading: loadingDetail } = usePrediction(selectedPredictionId, !!selectedPredictionId);
 
   const viewDetails = (predictionId) => {
     setSelectedPredictionId(predictionId);
@@ -108,7 +64,7 @@ const PredictionsList = () => {
             <h2 className="text-2xl font-bold text-gray-800">AI Predictions</h2>
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
             >
               {showCreateForm ? 'Cancel' : 'New Prediction'}
             </button>
@@ -116,74 +72,13 @@ const PredictionsList = () => {
 
           {/* Create Prediction Form */}
           {showCreateForm && (
-            <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Create New Prediction</h3>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Prediction Type
-                    </label>
-                    <select
-                      name="predictionType"
-                      value={formData.predictionType}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      {predictionTypes.map((type) => (
-                        <option key={type} value={type}>
-                          {type.replace(/_/g, ' ')}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Dataset ID
-                    </label>
-                    <input
-                      type="number"
-                      name="datasetId"
-                      value={formData.datasetId}
-                      onChange={handleChange}
-                      placeholder="Enter dataset ID"
-                      required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Model Version
-                  </label>
-                  <input
-                    type="text"
-                    name="modelVersion"
-                    value={formData.modelVersion}
-                    onChange={handleChange}
-                    placeholder="v1.0"
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                {createError && (
-                  <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-                    <p className="text-red-800">{createError.message}</p>
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={creating}
-                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                >
-                  {creating ? 'Creating...' : 'Create Prediction'}
-                </button>
-              </form>
+            <div className="px-6 py-4">
+              <CreatePredictionForm 
+                onSuccess={() => {
+                  setShowCreateForm(false);
+                  refetch();
+                }} 
+              />
             </div>
           )}
 

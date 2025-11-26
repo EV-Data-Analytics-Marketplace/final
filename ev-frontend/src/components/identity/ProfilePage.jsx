@@ -27,6 +27,7 @@ const ProfilePage = () => {
       phoneNumber: profile?.phoneNumber || '',
       organization: profile?.organization || '',
       role: profile?.role || '',
+      password: '', // Will be filled if user wants to change password
       address: profile?.address || '',
       country: profile?.country || '',
       city: profile?.city || '',
@@ -52,13 +53,34 @@ const ProfilePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Backend requires password and role fields
+    // If password is empty, we need to inform the user
+    if (!formData.password || formData.password.trim() === '') {
+      alert('Please enter your current password to confirm the profile update.');
+      return;
+    }
+    
+    const submitData = {
+      ...formData,
+      role: profile?.role, // Always use current role
+    };
+    
+    console.log('Submitting profile data:', submitData);
     try {
-      await updateProfile(formData);
+      await updateProfile(submitData);
       await refetch();
       setIsEditing(false);
+      setFormData({}); // Clear form data including password
       alert('Profile updated successfully!');
     } catch (err) {
       console.error('Update failed:', err);
+      console.error('Error response:', err.response?.data);
+      console.error('Validation errors:', err.response?.data?.errors);
+      const errorMsg = err.response?.data?.errors 
+        ? Object.entries(err.response.data.errors).map(([field, msg]) => `${field}: ${msg}`).join('\n')
+        : err.response?.data?.message || err.message;
+      alert(`Update failed:\n${errorMsg}`);
     }
   };
 
@@ -143,6 +165,20 @@ const ProfilePage = () => {
                     onChange={handleChange}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Password</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Enter your current password"
+                    required
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">Enter your current password to confirm changes</p>
                 </div>
 
                 <div>

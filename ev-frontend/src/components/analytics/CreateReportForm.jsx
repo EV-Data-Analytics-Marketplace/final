@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useCreateReport } from '../../hooks/analytics/useCreateReport';
+import { useMyDatasets } from '../../hooks/data/useMyDatasets';
 
 const CreateReportForm = ({ onSuccess }) => {
   const { create, isLoading, error } = useCreateReport();
+  const { datasets, isLoading: datasetsLoading } = useMyDatasets();
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     reportType: 'BATTERY_HEALTH',
@@ -31,10 +33,18 @@ const CreateReportForm = ({ onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await create({
-        ...formData,
+      const reportData = {
+        reportType: formData.reportType,
         datasetId: parseInt(formData.datasetId),
-      });
+        title: formData.title,
+      };
+      
+      // Only add description if it's not empty
+      if (formData.description && formData.description.trim()) {
+        reportData.description = formData.description.trim();
+      }
+      
+      await create(reportData);
       setFormData({
         reportType: 'BATTERY_HEALTH',
         datasetId: '',
@@ -47,6 +57,8 @@ const CreateReportForm = ({ onSuccess }) => {
       alert('Report created successfully!');
     } catch (err) {
       console.error('Failed to create report:', err);
+      console.error('Error details:', err.response?.data);
+      alert('Failed to create report: ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -89,17 +101,32 @@ const CreateReportForm = ({ onSuccess }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Dataset ID *
+              Dataset *
             </label>
-            <input
-              type="number"
-              name="datasetId"
-              value={formData.datasetId}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter dataset ID"
-            />
+            {datasetsLoading ? (
+              <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50">
+                Loading datasets...
+              </div>
+            ) : datasets && datasets.length > 0 ? (
+              <select
+                name="datasetId"
+                value={formData.datasetId}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select a dataset</option>
+                {datasets.map(dataset => (
+                  <option key={dataset.id} value={dataset.id}>
+                    {dataset.name} (ID: {dataset.id})
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-yellow-50 text-yellow-700">
+                No datasets available. Please create a dataset first.
+              </div>
+            )}
           </div>
 
           <div>

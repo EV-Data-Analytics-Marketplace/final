@@ -105,6 +105,7 @@ export const useTotalEarnings = (autoFetch = true) => {
     try {
       const response = await getTotalEarnings();
       console.log('Total Earnings API Response:', response.data);
+      console.log('Total Earnings Amount:', response.data?.totalEarnings);
       setEarnings(response.data);
       setIsLoading(false);
       return response.data;
